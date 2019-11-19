@@ -2,11 +2,17 @@ package com.systra.peppervideochat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 
 public class MainActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
 
@@ -15,6 +21,28 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         QiSDK.register(this, this);
+    }
+
+    // オペレーター選択画面に遷移するボタンの処理
+    // ログインしていない場合は遷移せず、トーストを表示する。
+    public void onButtonClick(View view){
+        Intent intent = new Intent(this, ChoiceActivity.class);
+        startActivity(intent);
+    }
+
+    // オーバーフローメニューの表示
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_options_menu_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // オーバーフローメニューの処理
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
