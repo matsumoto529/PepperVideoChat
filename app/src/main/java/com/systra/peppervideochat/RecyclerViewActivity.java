@@ -47,15 +47,15 @@ public class RecyclerViewActivity extends RecyclerView.Adapter<RecyclerViewActiv
 
         final ViewHolder holder = new ViewHolder(view);
 
-//        view.setOnClickListener(v -> {
-//            final int position = holder.getAdapterPosition();
-//            String peer = peerId[position];
-//            Log.d(TAG, peer);
-//            Context context = v.getContext();
-//            Intent intent = new Intent(context, ChatActivity.class);
-//            intent.putExtra("PeerID", peer);
-//            context.startActivity(intent);
-//        });
+        view.setOnClickListener(v -> {
+            final int position = holder.getAdapterPosition();
+            String peer = peerId[position];
+            Log.d(TAG, peer);
+            Context context = v.getContext();
+            Intent intent = new Intent(context, ChatActivity.class);
+            intent.putExtra("PeerID", peer);
+            context.startActivity(intent);
+        });
         return holder;
     }
 
