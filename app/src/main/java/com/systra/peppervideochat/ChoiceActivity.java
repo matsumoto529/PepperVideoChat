@@ -1,11 +1,14 @@
 package com.systra.peppervideochat;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
@@ -30,6 +33,10 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         setContentView(R.layout.activity_choice);
         QiSDK.register(this, this);
 
+        // 戻るボタンの作成
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         // ユーザーがサインインしているかどうか確認し、それに応じてUIを更新する。
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         // RecyclerViewのサイズを維持し続ける。
@@ -39,8 +46,23 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         recyclerView.setLayoutManager(rvLayoutManager);
 
         //
-        // APIにリクエストする。
+        // WebAPIにリクエストする。
         //
+
+
+
+        // 更新ボタンの処理
+        Button updateButton = findViewById(R.id.update_button);
+    }
+
+    // 戻るボタンの処理
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
