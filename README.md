@@ -9,8 +9,8 @@ Pepperビデオ通話用のGitHubです。
 　・activity_choice.xml(未完)<br>
 　・ChoiceActivity.java(未完)<br>
 ### 3.ビデオ通話画面
-　・activity_chat.xml(未着手)<br>
-　・ChatActivity.java(未着手)<br>
+　・activity_chat.xml(未完)<br>
+　・ChatActivity.java(未完)<br>
 ### 4.ログイン画面
 　・activity_login.xml(未着手)<br>
 　・LoginActivity.java(未着手)<br>
