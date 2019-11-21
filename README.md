@@ -19,3 +19,4 @@ Pepperビデオ通話用のGitHubです。
 　・RecyclerViewActivity.java(未完)<br>
 
 ### API通信(DB接続)
+　・AsyncJsonLoader.java(未完)<br>
