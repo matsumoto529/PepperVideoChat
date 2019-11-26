@@ -12,8 +12,8 @@ Pepperビデオ通話用のGitHubです。
 　・activity_chat.xml(未完)<br>
 　・ChatActivity.java(未完)<br>
 ### 4.ログイン画面
-　・activity_login.xml(未着手)<br>
-　・LoginActivity.java(未着手)<br>
+　・activity_login.xml(未完)<br>
+　・LoginActivity.java(未完)<br>
 ### 5.オペレーター配置画面
 　・activity_recycler_view.xml(未完)<br>
 　・RecyclerViewActivity.java(未完)<br>
