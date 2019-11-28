@@ -1,7 +1,5 @@
 package com.systra.peppervideochat;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,10 +7,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
-import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 
 public class MainActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
 
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オペレーター選択画面に遷移するボタンの処理
     // ログインしていない場合は遷移せず、トーストを表示する。
     public void onButtonClick(View view){
-        Intent intent = new Intent(this, ChatActivity.class);
+        Intent intent = new Intent(this, ChoiceActivity.class);
         startActivity(intent);
     }
 
@@ -41,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オーバーフローメニューの処理
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
         return super.onOptionsItemSelected(item);
     }
 

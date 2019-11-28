@@ -1,7 +1,10 @@
 package com.systra.peppervideochat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +21,9 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         setContentView(R.layout.activity_login);
         QiSDK.register(this, this);
 
+        // アクティビティ遷移時に自動的にキーボードが立ち上がらないようにする。
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -31,6 +37,11 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onButtonClick(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
