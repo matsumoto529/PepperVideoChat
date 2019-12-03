@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オペレーター選択画面に遷移するボタンの処理
     // ログインしていない場合は遷移せず、トーストを表示する。
     public void onButtonClick(View view){
-        Intent intent = new Intent(this, ChoiceActivity.class);
+        Intent intent = new Intent(this, ChatActivity.class);
         startActivity(intent);
     }
 

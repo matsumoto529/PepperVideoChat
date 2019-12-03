@@ -27,8 +27,9 @@
             android:layout_weight="1.5"
             android:layout_marginLeft="140dp"
             android:text="メールアドレス："
-            android:textSize="30sp"
-            android:textColor="#000000"/>
+            android:textSize="29sp"
+            android:textColor="#000000"
+            android:textStyle="bold"/>
         <EditText
             android:id="@+id/etMailaddress"
             android:background="@drawable/frame_style"
@@ -53,7 +54,8 @@
             android:layout_marginLeft="200dp"
             android:text="パスワード："
             android:textSize="30sp"
-            android:textColor="#000000"/>
+            android:textColor="#000000"
+            android:textStyle="bold"/>
         <EditText
             android:id="@+id/etPassword"
             android:background="@drawable/frame_style"
@@ -74,8 +76,9 @@
         android:layout_marginLeft="400sp"
         android:layout_marginRight="400sp"
         android:layout_marginBottom="50sp"
-        android:background="@drawable/button_yellow"
+        android:background="@drawable/button_login_green"
         android:text="ログイン"
         android:textSize="30sp"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:textStyle="bold"/>
 </LinearLayout>
