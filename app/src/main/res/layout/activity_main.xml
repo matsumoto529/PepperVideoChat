@@ -44,7 +44,7 @@
         android:layout_marginRight="200dp"
         android:layout_marginBottom="100dp"
         android:text="オペレーター選択画面へ"
-        android:textSize="40sp"
+        android:textSize="45sp"
         android:textColor="#000000"
         android:textStyle="bold"/>
 

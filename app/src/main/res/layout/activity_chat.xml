@@ -34,7 +34,7 @@
 
     <View
         android:id="@+id/vRemoteView"
-        android:background="#c0c0c0"
+        android:background="@drawable/view_chat_color"
         android:layout_width="400dp"
         android:layout_height="400dp"
         android:layout_marginBottom="24dp"
@@ -74,7 +74,7 @@
 
     <View
         android:id="@+id/vLocalView"
-        android:background="#c0c0c0"
+        android:background="@drawable/view_chat_color"
         android:layout_width="220dp"
         android:layout_height="220dp"
         android:layout_marginEnd="16dp"
