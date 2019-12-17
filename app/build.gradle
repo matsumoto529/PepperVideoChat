@@ -34,5 +34,13 @@ dependencies {
     implementation 'com.aldebaran:qisdk:1.4.9'
     implementation 'com.aldebaran:qisdk-design:1.4.9'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    compile(name: 'SkyWay', ext: 'aar')
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
 }
