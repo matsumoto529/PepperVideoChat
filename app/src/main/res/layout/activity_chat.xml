@@ -34,6 +34,7 @@
 
     <View
         android:id="@+id/vRemoteView"
+        class="io.skyway.Peer.Browser.Canvas"
         android:background="@drawable/view_chat_color"
         android:layout_width="400dp"
         android:layout_height="400dp"
@@ -74,11 +75,12 @@
 
     <View
         android:id="@+id/vLocalView"
-        android:background="@drawable/view_chat_color"
+        class="io.skyway.Peer.Browser.Canvas"
         android:layout_width="220dp"
         android:layout_height="220dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/view_chat_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
