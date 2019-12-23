@@ -211,7 +211,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
         try {
-            @SuppressLint("WrongViewCast") Canvas canvas = (Canvas) findViewById(R.id.vLocalView);
+            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
             _localStream.addVideoRenderer(canvas, 0);
         } catch (Exception e){
             e.getStackTrace();
