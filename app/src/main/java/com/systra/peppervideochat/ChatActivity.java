@@ -210,8 +210,12 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         Navigator.initialize(_peer); // _peerを初期化
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
-         @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
-        _localStream.addVideoRenderer(canvas, 0);
+        try {
+            @SuppressLint("WrongViewCast") Canvas canvas = (Canvas) findViewById(R.id.vLocalView);
+            _localStream.addVideoRenderer(canvas, 0);
+        } catch (Exception e){
+            e.getStackTrace();
+        }
     }
 
     //
