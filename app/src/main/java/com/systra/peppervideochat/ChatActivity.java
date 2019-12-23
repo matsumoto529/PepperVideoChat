@@ -37,6 +37,8 @@ import io.skyway.Peer.Peer;
 import io.skyway.Peer.PeerError;
 import io.skyway.Peer.PeerOption;
 
+import static com.systra.peppervideochat.R.id.vLocalView;
+
 
 public class ChatActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
     private static final String TAG = ChatActivity.class.getSimpleName();
@@ -59,7 +61,6 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
         QiSDK.register(this, this);
 
         // 戻るボタンの作成
@@ -69,6 +70,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         // Windowタイトルの非表示
         Window window = getWindow();
         window.addFlags(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_chat);
 
         // UI handlerの設定
         _handler = new Handler(Looper.getMainLooper());
@@ -208,8 +210,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         Navigator.initialize(_peer); // _peerを初期化
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
-
-        @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
+         @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
         _localStream.addVideoRenderer(canvas, 0);
     }
 
@@ -239,7 +240,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     private void destroyPeer(){
         closeRemoteStream();
         if (null != _localStream){
-            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
+            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(vLocalView);
             _localStream.removeVideoRenderer(canvas, 0);
             _localStream.close();
         }
