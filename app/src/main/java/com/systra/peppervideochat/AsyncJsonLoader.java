@@ -51,6 +51,7 @@ public class AsyncJsonLoader extends AsyncTask<String, Integer, JSONObject> {
         mAsyncCallback.cancel();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected JSONObject doInBackground(String... _uri) {
         HttpClient httpClient = new DefaultHttpClient();
