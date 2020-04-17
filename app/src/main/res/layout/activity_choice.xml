@@ -23,12 +23,14 @@
             android:textColor="#000000"/>
         <Button
             android:id="@+id/update_button"
+            android:onClick="onUpdateClick"
             android:background="@drawable/button_yellow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="更新"
             android:textSize="30sp"
-            android:textColor="#000000"/>
+            android:textColor="#000000"
+            tools:ignore="OnClick" />
     </LinearLayout>
 
     <LinearLayout
@@ -38,13 +40,39 @@
         android:layout_marginTop="50dp"
         android:layout_marginRight="200dp"
         android:layout_marginBottom="50dp"
-        android:layout_gravity="center">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/tvDisplayName_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:background="#dcdcdc"/>
+            android:background="#dcdcdc"
+            android:textSize="50sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+        <Button
+            android:id="@+id/tvDisplayName_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#dcdcdc"
+            android:textSize="50sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+        <Button
+            android:id="@+id/tvDisplayName_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#dcdcdc"
+            android:textSize="50sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/recycler_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+<!--            android:background="#dcdcdc"/>-->
     </LinearLayout>
 </LinearLayout>

@@ -9,12 +9,12 @@
 
     <TextView
         android:layout_width="237dp"
-        android:layout_height="95dp"
+        android:layout_height="100dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="148dp"
         android:text="「CALL」ボタンを押して呼び出してください！"
         android:textColor="#000000"
-        android:textSize="25sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,12 +22,12 @@
 
     <TextView
         android:layout_width="233dp"
-        android:layout_height="100dp"
+        android:layout_height="110dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="250dp"
         android:text="終わるときは「END」ボタンを押してください！"
         android:textColor="#000000"
-        android:textSize="25sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

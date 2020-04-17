@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,7 +48,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     // SkyWay関連の設定
     //
     private static final String API_KEY = "1949a178-d084-4566-830a-83c6d070dcfb"; // Pepperビデオ通話用のSkyWayのAPIキー
-    private static final String DOMAIN = "pepperoperator-01.web.app"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
+    private static final String DOMAIN = "windfield.sakura.ne.jp"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
 
     private Peer _peer;
     private MediaStream _localStream; // PC側の通話設定
@@ -56,7 +57,10 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
 
     private boolean _bConnected; // CALLボタンの設定
     private Handler _handler; //
+    private String peerId; // Pepper側のPeerID
 
+    private String email = "matsumoto@systra.co.jp";
+    private String pass = "matsusys";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         peerOption.key = API_KEY;
         peerOption.domain = DOMAIN;
         _peer = new Peer(this, peerOption);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerOp_" + peerOption);
 
         //
         // Peer event callbacksの設定
@@ -89,10 +94,19 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         // OPEN
         _peer.on(Peer.PeerEventEnum.OPEN, object -> {
             // 許可をリクエスト
+            peerId = object.toString();
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_" + object);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_" + peerId);
+            // PeerIDの登録
+            Uri.Builder builder = new Uri.Builder();
+            PeerIdRegister pir = new PeerIdRegister(this);
+            pir.add(email, pass, peerId);
+            pir.execute(builder);
+
             if (ContextCompat.checkSelfPermission(activity,
                     Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(activity,
-                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO }, 0);
+                    Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, 0);
             } else {
                 // localのMediaStreamを取得して表示
                 startLocalStream();
@@ -101,10 +115,10 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
 
         // CALL(電話の着信)
         _peer.on(Peer.PeerEventEnum.CALL, object -> {
-            if (!(object instanceof MediaConnection)){
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerIdCall_" + peerId);
+            if (!(object instanceof MediaConnection)) {
                 return;
             }
-
             _mediaConnection = (MediaConnection) object;
             setMediaCallBack();
             _mediaConnection.answer(_localStream);
@@ -118,7 +132,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         // DISCONNECTED(接続できない)
         _peer.on(Peer.PeerEventEnum.DISCONNECTED, object -> Log.d(TAG, "[On/Disconnected]"));
         // ERROR(エラー)
-        _peer.on(Peer.PeerEventEnum.ERROR, object ->{
+        _peer.on(Peer.PeerEventEnum.ERROR, object -> {
             PeerError error = (PeerError) object;
             Log.d(TAG, "[On/Error]" + error.message);
         });
@@ -130,12 +144,14 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         btCallAction.setEnabled(true);
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
-            if (!_bConnected){
+            if (!_bConnected) {
                 Toast toast = Toast.makeText(this, "チャットリクエストを送信しました！(仮)", Toast.LENGTH_LONG); // テキスト内容は変更する
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
                 Intent intent = getIntent();
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_intent_" + intent);
                 String PeerID = intent.getStringExtra("PeerID");
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_PeerID_" + PeerID);
                 onPeerSelected(PeerID);
             } else {
                 // 電話を切る
@@ -151,9 +167,9 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     // 許可ダイアログの承認結果を受け取る(許可・不許可)
     // 不許可を選んだ場合、カメラとマイクの許可を促す
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permission, @NonNull int[] grantResults){
-        if (requestCode == 0){
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permission, @NonNull int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startLocalStream();
             } else {
                 Toast.makeText(this, "カメラとマイクにアクセスできませんでした。\n許可を求められたら、許可をクリックします。", Toast.LENGTH_SHORT).show();
@@ -163,16 +179,16 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
 
     // 戻るボタンの処理
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == android.R.id.home){
+        if (itemId == android.R.id.home) {
             finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         // スリープと画面ロックを無効にする
         Window window = getWindow();
@@ -181,14 +197,14 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         // ボリュームコントロールストリームタイプをデフォルトに設定
         setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         // スリープと画面ロックを有効にする
         Window window = getWindow();
@@ -197,7 +213,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
         QiSDK.unregister(this, this);
         destroyPeer();
@@ -206,14 +222,14 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // ローカルのMediaEventsを取得して表示
     //
-    void startLocalStream(){
+    void startLocalStream() {
         Navigator.initialize(_peer); // _peerを初期化
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
         try {
             @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
             _localStream.addVideoRenderer(canvas, 0);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
         }
     }
@@ -221,18 +237,21 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // MediaConnection.MediaEventのコールバックを設定
     //
-    void setMediaCallBack(){
+    void setMediaCallBack() {
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, object -> {
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_STREAM_" + object);
             _remoteStream = (MediaStream) object;
             @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_CLOSE_" + object);
             closeRemoteStream();
             _bConnected = false;
             updateActionButtonTitle();
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.ERROR, object -> {
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_ERROR_" + object);
             PeerError peerError = (PeerError) object;
             Log.d(TAG, "[On/MediaError]" + peerError);
         });
@@ -241,26 +260,26 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // オブジェクトをクリーンアップ
     //
-    private void destroyPeer(){
+    private void destroyPeer() {
         closeRemoteStream();
-        if (null != _localStream){
+        if (null != _localStream) {
             @SuppressLint("WrongViewCast") Canvas canvas = findViewById(vLocalView);
             _localStream.removeVideoRenderer(canvas, 0);
             _localStream.close();
         }
-        if (null != _mediaConnection){
-            if (_mediaConnection.isOpen()){
+        if (null != _mediaConnection) {
+            if (_mediaConnection.isOpen()) {
                 _mediaConnection.close();
             }
             unsetMediaCallbacks();
         }
         Navigator.terminate();
-        if (null != _peer){
+        if (null != _peer) {
             unsetPeerCallbacks(_peer);
-            if (!_peer.isDisconnected()){
+            if (!_peer.isDisconnected()) {
                 _peer.disconnect();
             }
-            if (!_peer.isDestroyed()){
+            if (!_peer.isDestroyed()) {
                 _peer.destroy();
             }
             _peer = null;
@@ -270,8 +289,8 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // PeerEventsのコールバックの設定を解除
     //
-    void unsetPeerCallbacks(Peer peer){
-        if (null == _peer){
+    void unsetPeerCallbacks(Peer peer) {
+        if (null == _peer) {
             return;
         }
         peer.on(Peer.PeerEventEnum.OPEN, null);
@@ -285,8 +304,8 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // MediaConnection.MediaEventsのコールバックの設定を解除
     //
-    void unsetMediaCallbacks(){
-        if (null == _mediaConnection){
+    void unsetMediaCallbacks() {
+        if (null == _mediaConnection) {
             return;
         }
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, null);
@@ -297,8 +316,8 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // リモートのMediaStreamを閉じる
     //
-    void closeRemoteStream(){
-        if (null == _remoteStream){
+    void closeRemoteStream() {
+        if (null == _remoteStream) {
             return;
         }
         @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vRemoteView);
@@ -312,16 +331,16 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     //
     // MediaConnectionを作成
     //
-    void onPeerSelected(String strPeerId){
-        if (null == _peer){
+    void onPeerSelected(String strPeerId) {
+        if (null == _peer) {
             return;
         }
-        if (null != _mediaConnection){
+        if (null != _mediaConnection) {
             _mediaConnection.close();
         }
         CallOption callOption = new CallOption();
         _mediaConnection = _peer.call(strPeerId, _localStream, callOption);
-        if (null != _mediaConnection){
+        if (null != _mediaConnection) {
             setMediaCallBack();
             _bConnected = true;
         }
@@ -329,14 +348,14 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     }
 
     //
-    // actionButtonボタンを更新
+    // CALLボタンを更新
     //
     @SuppressLint("SetTextI18n")
-    void updateActionButtonTitle(){
+    void updateActionButtonTitle() {
         _handler.post(() -> {
             Button btTextCallChange = findViewById(R.id.btCallAction);
-            if (null != btTextCallChange){
-                if (!_bConnected){
+            if (null != btTextCallChange) {
+                if (!_bConnected) {
                     btTextCallChange.setText("CALL");
                 } else {
                     btTextCallChange.setText("END");
