@@ -20,9 +20,6 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
-import static android.nfc.NfcAdapter.EXTRA_DATA;
-import static android.widget.Toast.LENGTH_LONG;
-
 public class LoginActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
 
     Boolean flag = false;
@@ -80,31 +77,25 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_main_flag_" + flag);
                 if (flag == true) {
+                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainTrue_flag_" + flag);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra(EXTRA_DATA, flag);
+                    intent.putExtra("FLAG", flag);
+                    intent.putExtra("EMAIL", _email);
+                    intent.putExtra("PASS", _pass);
                     startActivity(intent);
                 }
                 if (flag == false) {
-                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_main_flag_" + flag);
-                    Toast toast = Toast.makeText(LoginActivity.this, "ログインできませんでした", Toast.LENGTH_LONG);
+                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainFalse_flag_" + flag);
+                    Toast toast = Toast.makeText(LoginActivity.this, "ログインできませんでした。\nメールアドレス、パスワードが正しいかご確認ください。", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     View view = toast.getView();
                     view.setBackgroundColor(Color.rgb(128, 128, 128));
                     toast.show();
                 }
             }
-        }, 1000);
-
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-    }
-
-    public void execute(Uri.Builder builder) {
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_IOException_builder_" + builder);
-        Toast toast = Toast.makeText(this, "ログインできませんでした", LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
+        }, 3000);
     }
 
     @Override

@@ -9,28 +9,29 @@ import android.widget.Button;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
 public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
+    private Boolean flag = true;
 
     private String[] Name = new String[3];
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter rvAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-
-    private String email = "matsumoto@systra.co.jp";
-    private String pass = "matsusys";
+    private String email;
+    private String pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
         QiSDK.register(this, this);
+
+        Intent getIntent = getIntent();
+        flag = getIntent.getBooleanExtra("FLAG", true);
+        email = getIntent.getStringExtra("EMAIL");
+        pass = getIntent.getStringExtra("PASS");
 
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
@@ -47,53 +48,6 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         ggir.add(email, pass);
         ggir.execute(builder);
 
-        // 以下は実装しない可能性大
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                AsyncHttpsRequest asyncHttpsRequest = new AsyncHttpsRequest(ChoiceActivity.this);
-//                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_8_" + asyncHttpsRequest);
-//            }
-//        }).start();
-
-//        StringBuffer nameSb = new StringBuffer();
-//            if (task != null){ nameSb.append(task); }
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_10_" + task);
-//        String nameText = nameSb.toString();
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_e_" + nameText);
-
-
-
-//        List<String> fields = new ArrayList<>();
-//        ResultSetMetaData rsmd = (ResultSetMetaData) task;
-//        try {
-//            for (int i = 0; i <= rsmd.getColumnCount(); i++){
-//
-//                    fields.add(rsmd.getColumnName(i));
-//                    System.out.println(fields);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        recyclerView = findViewById(R.id.recycler_view);
-//        int i = 0;
-//        for (String field : fields){
-//            System.out.println(field + " : " + task);
-//            Name[i] = String.format(Locale.ENGLISH, field, i);
-//            i++;
-//            RecyclerView.Adapter rvAdapter = new RecyclerViewActivity(Name);
-//            recyclerView.setAdapter(rvAdapter);
-//        }
-
-//        // ユーザーがサインインしているかどうか確認し、それに応じてUIを更新する。
-//        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-//        // RecyclerViewのサイズを維持し続ける。
-//        recyclerView.setHasFixedSize(true);
-//        // linear layout managerを使用する。
-//        RecyclerView.LayoutManager rvLayoutManager = new LinearLayoutManager(this);
-//        recyclerView.setLayoutManager(rvLayoutManager);
-
-
         // 更新ボタンの処理内容の呼び出し
         Button updateButton = findViewById(R.id.update_button);
         updateButton.setOnClickListener(this::reload);
@@ -104,7 +58,12 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
-            finish();
+            Intent intent = new Intent(ChoiceActivity.this, MainActivity.class);
+            flag = true;
+            intent.putExtra("FLAG", flag);
+            intent.putExtra("EMAIL", email);
+            intent.putExtra("PASS", pass);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

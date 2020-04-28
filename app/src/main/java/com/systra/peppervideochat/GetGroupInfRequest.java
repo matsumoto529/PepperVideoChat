@@ -20,11 +20,20 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[]> {
+public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]> {
     private final com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
 
     private String email;
     private String pass;
+
+    private String peerId_1;
+    private String peerId_2;
+    private String peerId_3;
+
+    private Boolean btnFlag_1 = false;
+    private Boolean btnFlag_2 = false;
+    private Boolean btnFlag_3 = false;
+
 
     public GetGroupInfRequest(ChoiceActivity activity){
         this.ChoiceActivity = activity;
@@ -36,13 +45,16 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[]> {
     }
 
     @Override
-    protected String[] doInBackground(Uri.Builder... builder) {
+    protected String[][] doInBackground(Uri.Builder... builder) {
         String requestTokenUrl =  "https://windfield.work/api/login?email=" + email + "&password=" + pass;
         URL tokenUrl;
         HttpsURLConnection tokenUrlConnection;
         BufferedReader tokenBr;
 
         String[] displayName = new String[3];
+        String[] peerId = new String[3];
+
+        String[][] user = new String[3][2];
 
         try {
             tokenUrl = new URL(requestTokenUrl);
@@ -75,20 +87,34 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[]> {
             String jsonText = sb.toString();
             JSONArray data = new JSONArray(jsonText);
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_data_" + data);
+
             for (int i = 0; i < data.length(); i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 if (i == 0) {
-                    displayName[i] = jsonObject.getString("display_name");
+                    user[i][0] = jsonObject.getString("display_name");
+                    user[i][1] = jsonObject.getString("caller_peer_id");
+                    if (user[i][1] != null){
+                        btnFlag_1 = true;
+                    }
                 } else if (i == 1) {
-                    displayName[i] = jsonObject.getString("display_name");
+                    user[i][0] = jsonObject.getString("display_name");
+                    user[i][1] = jsonObject.getString("caller_peer_id");
+                    if (user[i][1] != null){
+                        btnFlag_2 = true;
+                    }
                 } else if (i == 2) {
-                    displayName[i] = jsonObject.getString("display_name");
+                    user[i][0] = jsonObject.getString("display_name");
+                    user[i][1] = jsonObject.getString("caller_peer_id");
+                    if (user[i][1] != null){
+                        btnFlag_3 = true;
+                    }
                 }
             }
+
             br.close();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_displayName[0]_" + displayName[0]);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_displayName[1]_" + displayName[1]);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_displayName[2]_" + displayName[2]);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[0]_" + user[0][0] + " : " + user[0][1] + " : " + btnFlag_1);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[1]_" + user[1][0] + " : " + user[1][1] + " : " + btnFlag_2);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[2]_" + user[2][0] + " : " + user[2][1] + " : " + btnFlag_3);
         } catch (MalformedURLException e)  {
             e.printStackTrace();
         } catch (ProtocolException e) {
@@ -98,44 +124,84 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[]> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return displayName;
+        return user;
     }
 
     @Override
-    protected void onPostExecute(String[] ressult){
-        for (int i = 0; i < ressult.length; i++){
+    protected void onPostExecute(String[][] result){
+        for (int i = 0; i < result.length; i++){
+            //
+            // ユーザーの表示・非表示
+            //
             if (i == 0){
-                TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
-                tv.setText(ressult[i]);
-                Button btn = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
-                btn.setOnClickListener(this::transitionChat);
+                // ユーザー１
+                Button btn1 = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
+                if (btnFlag_1 == false){
+                    btn1.setVisibility(View.INVISIBLE);
+                    btn1.setVisibility(View.GONE);
+                } else {
+                    peerId_1 = result[i][1];
+                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
+                    tv.setText(result[i][0]);
+                    btn1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_1_" + peerId_1);
+                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
+                            intent.putExtra("PEERID", peerId_1);
+                            intent.putExtra("EMAIL", email);
+                            intent.putExtra("PASS", pass);
+                            ChoiceActivity.startActivity(intent);
+                        }
+                    });
+                }
             } else if (i == 1){
-                Button btn = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
-                if (ressult[i] == null){
-                    btn.setVisibility(View.INVISIBLE);
-                    btn.setVisibility(View.GONE);
-                    break;
+                // ユーザー２
+                Button btn2 = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
+                if (btnFlag_2 == false){
+                    btn2.setVisibility(View.INVISIBLE);
+                    btn2.setVisibility(View.GONE);
+                    return;
+                } else {
+                    peerId_2 = result[i][1];
+                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
+                    tv.setText(result[i][0]);
+                    btn2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_2_" + peerId_2);
+                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
+                            intent.putExtra("PEERID", peerId_2);
+                            intent.putExtra("EMAIL", email);
+                            intent.putExtra("PASS", pass);
+                            ChoiceActivity.startActivity(intent);
+                        }
+                    });
                 }
-                TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
-                tv.setText(ressult[i]);
-                btn.setOnClickListener(this::transitionChat);
             } else if (i == 2){
-                Button btn = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
-                if (ressult[i] == null){
-                    btn.setVisibility(View.INVISIBLE);
-                    btn.setVisibility(View.GONE);
-                    break;
+                // ユーザー３
+                Button btn3 = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
+                if (btnFlag_3 == false){
+                    btn3.setVisibility(View.INVISIBLE);
+                    btn3.setVisibility(View.GONE);
+                    return;
+                } else {
+                    peerId_3 = result[i][1];
+                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
+                    tv.setText(result[i][0]);
+                    btn3.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_3_" + peerId_3);
+                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
+                            intent.putExtra("PEERID", peerId_3);
+                            intent.putExtra("EMAIL", email);
+                            intent.putExtra("PASS", pass);
+                            ChoiceActivity.startActivity(intent);
+                        }
+                    });
                 }
-                TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
-                tv.setText(ressult[i]);
-                btn.setOnClickListener(this::transitionChat);
             }
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_result_" + ressult[i]);
         }
-    }
-
-    public void transitionChat(View view){
-        Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
-        ChoiceActivity.startActivity(intent);
     }
 }
