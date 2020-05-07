@@ -64,17 +64,18 @@ public class PeerIdRegister extends AsyncTask<Uri.Builder, Void, String[]> {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestMethod("GET");
             conn.connect();
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            StringBuffer sb = new StringBuffer();
-            while ((line = br.readLine()) != null) {
-                if (line != null) { sb.append(line); }
-            }
-            String jsonText = sb.toString();
-            JSONObject data = new JSONObject(jsonText);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_data_" + data);
-
-            br.close();
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_conn_" + conn);
+//            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            String line;
+//            StringBuffer sb = new StringBuffer();
+//            while ((line = br.readLine()) != null) {
+//                if (line != null) { sb.append(line); }
+//            }
+//            String jsonText = sb.toString();
+//            JSONObject data = new JSONObject(jsonText);
+//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_data_" + data);
+//
+//            br.close();
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -85,6 +86,6 @@ public class PeerIdRegister extends AsyncTask<Uri.Builder, Void, String[]> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return new String[0];
+        return null;
     }
 }

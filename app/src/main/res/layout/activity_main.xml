@@ -10,25 +10,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="70dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="170dp"
+            android:layout_marginTop="70dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ビデオ通話アプリ"
+                android:textSize="50sp"
+                android:textColor="#000000"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="「オペレーター選択画面へ」を押してください！"
+                android:textSize="20sp"
+                android:textColor="#000000"/>
+        </LinearLayout>
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tvLogDisplay"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ビデオ通話アプリ(アプリ名)"
-            android:textSize="50sp"
-            android:textColor="#000000"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="「オペレーター選択画面へ」を押してください！"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/frame_red"
+            android:padding="10dp"
+            android:text="ログインしてください"
             android:textSize="20sp"
-            android:textColor="#000000"/>
+            android:textColor="#ff0000"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <Button

@@ -1,13 +1,14 @@
 package com.systra.peppervideochat;
 
-import android.app.DownloadManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     private String email;
     private String pass;
 
-    private DownloadManager.Request setContentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +41,23 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         pass = getIntent.getStringExtra("PASS");
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
+
+        TextView logDisplay = findViewById(R.id.tvLogDisplay);
+        if (flag == false) {
+            logDisplay.setText("ログインしてください");
+            logDisplay.setTextColor(Color.parseColor("#ff0000"));
+            logDisplay.setBackground(getResources().getDrawable(R.drawable.frame_red));
+        }
+        if (flag == true) {
+            logDisplay.setText("ログイン済み");
+            logDisplay.setTextColor(Color.parseColor("#0000ff"));
+            logDisplay.setBackground(getResources().getDrawable(R.drawable.frame_blue));
+        }
     }
 
     // オペレーター選択画面に遷移するボタンの処理
     // ログインしていない場合は遷移せず、トーストを表示する。
-    public void onButtonClick(View view) {
+    public void onButtonClick(View v) {
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_click_flag_" + flag);
         if (flag == true){
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_clickTrue_flag_" + flag);
@@ -59,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_clickFalse_flag_" + flag);
             Toast toast = Toast.makeText(this, "ログインしてください。", LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
+            View view = toast.getView();
+            view.setBackgroundColor(Color.rgb(128, 128, 128));
             toast.show();
         }
 
@@ -100,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
             logout();
             Toast toast = Toast.makeText(this, "ログアウトしました。", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
+            View view = toast.getView();
+            view.setBackgroundColor(Color.rgb(128, 128, 128));
             toast.show();
             Intent intent = new Intent(MainActivity.this, MainActivity.class);
             startActivity(intent);

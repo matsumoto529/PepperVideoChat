@@ -85,6 +85,11 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     intent.putExtra("EMAIL", _email);
                     intent.putExtra("PASS", _pass);
                     startActivity(intent);
+                    Toast toast = Toast.makeText(LoginActivity.this, "ログインしました。", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    View view = toast.getView();
+                    view.setBackgroundColor(Color.rgb(128, 128, 128));
+                    toast.show();
                 }
                 if (flag == false) {
                     System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainFalse_flag_" + flag);

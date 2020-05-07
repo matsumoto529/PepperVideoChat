@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,21 +13,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 
 import io.skyway.Peer.Browser.Canvas;
 import io.skyway.Peer.Browser.MediaConstraints;
@@ -38,17 +38,15 @@ import io.skyway.Peer.Peer;
 import io.skyway.Peer.PeerError;
 import io.skyway.Peer.PeerOption;
 
-import static com.systra.peppervideochat.R.id.vLocalView;
-
-
-public class ChatActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
+public class ChatActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = ChatActivity.class.getSimpleName();
+    private Boolean flag = true;
 
     //
     // SkyWay関連の設定
     //
     private static final String API_KEY = "1949a178-d084-4566-830a-83c6d070dcfb"; // Pepperビデオ通話用のSkyWayのAPIキー
-    private static final String DOMAIN = "windfield.sakura.ne.jp"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
+    private static final String DOMAIN = "windfield.work"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
 
     private Peer _peer;
     private MediaStream _localStream; // PC側の通話設定
@@ -59,17 +57,27 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     private Handler _handler; //
     private String peerId; // Pepper側のPeerID
 
-    private String email = "matsumoto@systra.co.jp";
-    private String pass = "matsusys";
+    private String peerIdPc; // PC側のPeerID
+    private String email;
+    private String pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QiSDK.register(this, this);
 
+        Intent getIntent = getIntent();
+        flag = getIntent.getBooleanExtra("FLAG", true);
+        peerIdPc = getIntent.getStringExtra("PEERID");
+        email = getIntent.getStringExtra("EMAIL");
+        pass = getIntent.getStringExtra("PASS");
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPeerId_" + peerIdPc);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
+
         // 戻るボタンの作成
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Windowタイトルの非表示
         Window window = getWindow();
@@ -115,7 +123,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
 
         // CALL(電話の着信)
         _peer.on(Peer.PeerEventEnum.CALL, object -> {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerIdCall_" + peerId);
+//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerIdCall_" + peerId);
             if (!(object instanceof MediaConnection)) {
                 return;
             }
@@ -145,12 +153,15 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
             if (!_bConnected) {
-                Toast toast = Toast.makeText(this, "チャットリクエストを送信しました！(仮)", Toast.LENGTH_LONG); // テキスト内容は変更する
+                Toast toast = Toast.makeText(this, "呼び出しています。\nしばらくお待ちください。", Toast.LENGTH_SHORT); // テキスト内容は変更する
                 toast.setGravity(Gravity.CENTER, 0, 0);
+                View view = toast.getView();
+                view.setBackgroundColor(Color.rgb(128, 128, 128));
                 toast.show();
-                Intent intent = getIntent();
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_intent_" + intent);
-                String PeerID = intent.getStringExtra("PeerID");
+//                Intent intent = getIntent();
+//                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_intent_" + intent);
+                String PeerID = peerIdPc;
+//                String PeerID = intent.getStringExtra("PeerID");
                 System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_PeerID_" + PeerID);
                 onPeerSelected(PeerID);
             } else {
@@ -161,7 +172,16 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
             v.setEnabled(true);
         });
         Button btBackAction = findViewById(R.id.btBackAction);
-        btBackAction.setOnClickListener(v -> finish());
+        btBackAction.setOnClickListener(v -> {
+            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+            flag = true;
+            intent.putExtra("FLAG", flag);
+            intent.putExtra("EMAIL", email);
+            intent.putExtra("PASS", pass);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putEmail_" + email);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putPass_" + pass);
+            startActivity(intent);
+        });
     }
 
     // 許可ダイアログの承認結果を受け取る(許可・不許可)
@@ -172,20 +192,31 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startLocalStream();
             } else {
-                Toast.makeText(this, "カメラとマイクにアクセスできませんでした。\n許可を求められたら、許可をクリックします。", Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(this, "カメラとマイクにアクセスできませんでした。\n許可を求められたら、許可をクリックします。", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                View view = toast.getView();
+                view.setBackgroundColor(Color.rgb(128, 128, 128));
+                toast.show();
             }
         }
     }
 
     // 戻るボタンの処理
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int itemId = item.getItemId();
+//        if (itemId == android.R.id.home) {
+//            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+//            flag = true;
+//            intent.putExtra("FLAG", flag);
+//            intent.putExtra("EMAIL", email);
+//            intent.putExtra("PASS", pass);
+//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putEmail_" + email);
+//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putPass_" + pass);
+//            startActivity(intent);
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     protected void onStart() {
@@ -201,6 +232,13 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         super.onResume();
         // ボリュームコントロールストリームタイプをデフォルトに設定
         setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+    }
+
+    @Override
+    protected void onPause() {
+        // ボリュームコントロールストリームタイプをデフォルトに設定
+        setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+        super.onPause();
     }
 
     @Override
@@ -226,12 +264,9 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         Navigator.initialize(_peer); // _peerを初期化
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
-        try {
-            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vLocalView);
-            _localStream.addVideoRenderer(canvas, 0);
-        } catch (Exception e) {
-            e.getStackTrace();
-        }
+
+        Canvas canvas = (Canvas) findViewById(R.id.vLocalView);
+        _localStream.addVideoRenderer(canvas, 0);
     }
 
     //
@@ -241,7 +276,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, object -> {
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_STREAM_" + object);
             _remoteStream = (MediaStream) object;
-            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vRemoteView);
+            Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
@@ -263,7 +298,7 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
     private void destroyPeer() {
         closeRemoteStream();
         if (null != _localStream) {
-            @SuppressLint("WrongViewCast") Canvas canvas = findViewById(vLocalView);
+            Canvas canvas = findViewById(R.id.vLocalView);
             _localStream.removeVideoRenderer(canvas, 0);
             _localStream.close();
         }
@@ -320,11 +355,13 @@ public class ChatActivity extends AppCompatActivity implements RobotLifecycleCal
         if (null == _remoteStream) {
             return;
         }
-        @SuppressLint("WrongViewCast") Canvas canvas = findViewById(R.id.vRemoteView);
+        Canvas canvas = findViewById(R.id.vRemoteView);
         _remoteStream.removeVideoRenderer(canvas, 0);
         _remoteStream.close();
-        Toast toast = Toast.makeText(this, "キャンセルされました。", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(this, "キャンセルされました。", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
+        View view = toast.getView();
+        view.setBackgroundColor(Color.rgb(128, 128, 128));
         toast.show();
     }
 

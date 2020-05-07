@@ -65,7 +65,8 @@
             android:layout_marginRight="100dp"
             android:paddingTop="15dp"
             android:paddingBottom="10dp"
-            android:paddingLeft="8dp"/>
+            android:paddingLeft="8dp"
+            android:inputType="textPassword"/>
     </LinearLayout>
     <Button
         android:id="@+id/btLogin"
