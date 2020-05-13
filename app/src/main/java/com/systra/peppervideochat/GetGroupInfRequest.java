@@ -151,6 +151,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                             intent.putExtra("PEERID", peerId_1);
                             intent.putExtra("EMAIL", email);
                             intent.putExtra("PASS", pass);
+                            ChoiceActivity.finish();
                             ChoiceActivity.startActivity(intent);
                         }
                     });
@@ -174,6 +175,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                             intent.putExtra("PEERID", peerId_2);
                             intent.putExtra("EMAIL", email);
                             intent.putExtra("PASS", pass);
+                            ChoiceActivity.finish();
                             ChoiceActivity.startActivity(intent);
                         }
                     });
@@ -197,6 +199,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                             intent.putExtra("PEERID", peerId_3);
                             intent.putExtra("EMAIL", email);
                             intent.putExtra("PASS", pass);
+                            ChoiceActivity.finish();
                             ChoiceActivity.startActivity(intent);
                         }
                     });

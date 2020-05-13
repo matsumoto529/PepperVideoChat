@@ -58,25 +58,11 @@ public class PeerIdRegister extends AsyncTask<Uri.Builder, Void, String[]> {
             tokenBr.close();
 
             URL url = new URL("https://windfield.work/api/store_peer?my_peer_id=" + peerId);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_url_" + url);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestProperty("Authorization", "Bearer " + accessToken);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestMethod("GET");
             conn.connect();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_conn_" + conn);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            String line;
-//            StringBuffer sb = new StringBuffer();
-//            while ((line = br.readLine()) != null) {
-//                if (line != null) { sb.append(line); }
-//            }
-//            String jsonText = sb.toString();
-//            JSONObject data = new JSONObject(jsonText);
-//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_data_" + data);
-//
-//            br.close();
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ParcelFormatException e) {

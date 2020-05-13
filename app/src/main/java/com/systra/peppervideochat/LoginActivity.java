@@ -52,6 +52,11 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
 
         email = findViewById(R.id.etMailaddress);
         pass = findViewById(R.id.etPassword);
+
+        findViewById(R.id.appFinishButton).setOnClickListener(v -> {
+            MainActivity.finishFlag = true;
+            finish();
+        });
     }
 
     // 戻るボタンの処理
@@ -84,6 +89,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     intent.putExtra("FLAG", flag);
                     intent.putExtra("EMAIL", _email);
                     intent.putExtra("PASS", _pass);
+                    finish();
                     startActivity(intent);
                     Toast toast = Toast.makeText(LoginActivity.this, "ログインしました。", Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER, 0, 0);

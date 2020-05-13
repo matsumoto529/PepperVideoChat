@@ -75,10 +75,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
 
-        // 戻るボタンの作成
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-
         // Windowタイトルの非表示
         Window window = getWindow();
         window.addFlags(Window.FEATURE_NO_TITLE);
@@ -158,10 +154,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 View view = toast.getView();
                 view.setBackgroundColor(Color.rgb(128, 128, 128));
                 toast.show();
-//                Intent intent = getIntent();
-//                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_intent_" + intent);
                 String PeerID = peerIdPc;
-//                String PeerID = intent.getStringExtra("PeerID");
                 System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_PeerID_" + PeerID);
                 onPeerSelected(PeerID);
             } else {
@@ -178,8 +171,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putEmail_" + email);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putPass_" + pass);
+            finish();
             startActivity(intent);
         });
     }
@@ -200,23 +192,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             }
         }
     }
-
-    // 戻るボタンの処理
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int itemId = item.getItemId();
-//        if (itemId == android.R.id.home) {
-//            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
-//            flag = true;
-//            intent.putExtra("FLAG", flag);
-//            intent.putExtra("EMAIL", email);
-//            intent.putExtra("PASS", pass);
-//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putEmail_" + email);
-//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putPass_" + pass);
-//            startActivity(intent);
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     protected void onStart() {

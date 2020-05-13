@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
     Boolean flag;
     Boolean logoutFlag;
+    public static Boolean finishFlag = false;
 
     private String email;
     private String pass;
@@ -52,6 +53,14 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
             logDisplay.setText("ログイン済み");
             logDisplay.setTextColor(Color.parseColor("#0000ff"));
             logDisplay.setBackground(getResources().getDrawable(R.drawable.frame_blue));
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if (finishFlag){
+            finish();
         }
     }
 
@@ -84,8 +93,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_menu_list, menu);
         MenuItem setLog = menu.findItem(R.id.menuListOptionLogin);
-//        // 後で消す
-//        flag = true;
         if (flag == true) {
             setLog.setTitle("ログアウト");
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_setLog_true_" + setLog);
@@ -104,8 +111,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-//        // 後で消す
-//        logoutFlag = true;
         if (logoutFlag == false) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
@@ -133,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     protected void onDestroy() {
         super.onDestroy();
         QiSDK.unregister(this, this);
+        finishFlag = false;
     }
 
     @Override
