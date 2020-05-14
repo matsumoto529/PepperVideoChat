@@ -26,7 +26,7 @@
         android:layout_width="240dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="252dp"
-        android:text="「CALL」ボタンを押して呼び出してください！"
+        android:text="終わるときは「END」ボタンを押してください！"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
