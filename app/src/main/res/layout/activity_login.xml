@@ -79,7 +79,7 @@
             android:layout_marginLeft="360dp"
             android:layout_marginRight="240dp"
             android:layout_weight="0.2"
-            android:background="@drawable/button_login_green"
+            android:background="@drawable/button_call_blue"
             android:onClick="onButtonClick"
             android:text="ログイン"
             android:textColor="#000000"

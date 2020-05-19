@@ -19,8 +19,6 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
 
     private final com.systra.peppervideochat.LoginActivity LoginActivity;
 
-//    private String email = "matsumoto@systra.co.jp";
-//    private String pass = "matsusys";
     private String email;
     private String pass;
 

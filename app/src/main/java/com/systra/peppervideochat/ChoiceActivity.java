@@ -17,8 +17,6 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
     private Boolean flag = true;
 
-    private String[] Name = new String[3];
-
     private String email;
     private String pass;
 

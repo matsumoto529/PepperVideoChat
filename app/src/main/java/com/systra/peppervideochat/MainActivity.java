@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,16 +45,23 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
 
+        ImageView logIcon = findViewById(R.id.ivLogIcon);
+        logIcon.setVisibility(View.INVISIBLE);
+        LinearLayout logFrame = findViewById(R.id.logFrame);
         TextView logDisplay = findViewById(R.id.tvLogDisplay);
         if (flag == false) {
-            logDisplay.setText("ログインしてください");
+            logIcon.setVisibility(View.VISIBLE);
+            logIcon.setImageResource(R.drawable.baseline_lock_black_48);
+            logDisplay.setText("ログアウト");
             logDisplay.setTextColor(Color.parseColor("#ff0000"));
-            logDisplay.setBackground(getResources().getDrawable(R.drawable.frame_red));
+            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_red));
         }
         if (flag == true) {
-            logDisplay.setText("ログイン済み");
+            logIcon.setVisibility(View.VISIBLE);
+            logIcon.setImageResource(R.drawable.baseline_lock_open_black_48);
+            logDisplay.setText("ログイン");
             logDisplay.setTextColor(Color.parseColor("#0000ff"));
-            logDisplay.setBackground(getResources().getDrawable(R.drawable.frame_blue));
+            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_blue));
         }
     }
 
@@ -60,8 +69,12 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     protected void onResume(){
         super.onResume();
         if (finishFlag){
-            finish();
+            finishApp();
         }
+    }
+
+    protected void finishApp(){
+        finish();
     }
 
     // オペレーター選択画面に遷移するボタンの処理

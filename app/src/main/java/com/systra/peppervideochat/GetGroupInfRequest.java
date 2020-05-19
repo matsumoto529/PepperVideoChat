@@ -51,9 +51,6 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         HttpsURLConnection tokenUrlConnection;
         BufferedReader tokenBr;
 
-        String[] displayName = new String[3];
-        String[] peerId = new String[3];
-
         String[][] user = new String[3][2];
 
         try {
@@ -139,6 +136,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                 if (btnFlag_1 == false){
                     btn1.setVisibility(View.INVISIBLE);
                     btn1.setVisibility(View.GONE);
+                    continue;
                 } else {
                     peerId_1 = result[i][1];
                     TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_1);

@@ -46,26 +46,29 @@
             android:id="@+id/tvDisplayName_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#dcdcdc"
+            android:background="#fafafa"
             android:textSize="50sp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            style="?android:attr/borderlessButtonStyle"/>
         <Button
             android:id="@+id/tvDisplayName_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#dcdcdc"
+            android:background="#fafafa"
             android:textSize="50sp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            style="?android:attr/borderlessButtonStyle"/>
         <Button
             android:id="@+id/tvDisplayName_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#dcdcdc"
+            android:background="#fafafa"
             android:textSize="50sp"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            style="?android:attr/borderlessButtonStyle"/>
 
     </LinearLayout>
 </LinearLayout>
