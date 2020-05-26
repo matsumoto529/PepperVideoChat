@@ -1,15 +1,18 @@
 package com.systra.peppervideochat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,24 +48,42 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
 
-        ImageView logIcon = findViewById(R.id.ivLogIcon);
-        logIcon.setVisibility(View.INVISIBLE);
-        LinearLayout logFrame = findViewById(R.id.logFrame);
-        TextView logDisplay = findViewById(R.id.tvLogDisplay);
-        if (flag == false) {
-            logIcon.setVisibility(View.VISIBLE);
-            logIcon.setImageResource(R.drawable.baseline_lock_black_48);
-            logDisplay.setText("ログアウト");
-            logDisplay.setTextColor(Color.parseColor("#ff0000"));
-            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_red));
+        TextView tvLog = findViewById(R.id.tvLogDisplay);
+        ImageButton bt = findViewById(R.id.btNext);
+
+        Bitmap bitmap_false = BitmapFactory.decodeResource(getResources(), R.drawable.main_screen_illustration_false);
+            Drawable drawable_false = new BitmapDrawable(getResources(), bitmap_false);
+            Bitmap bitmap_true = BitmapFactory.decodeResource(getResources(), R.drawable.main_screen_illustration_true);
+            Drawable drawable_true = new BitmapDrawable(getResources(), bitmap_true);
+            if (flag == false){
+                tvLog.setText("お近くの受付カウンターから受付を行ってください。");
+                bt.setEnabled(false);
+                bt.setImageDrawable(drawable_false);
+            }
+            if (flag == true){
+                tvLog.setText("来客の方は画面をタッチしてください。");
+                bt.setEnabled(true);
+                bt.setImageDrawable(drawable_true);
         }
-        if (flag == true) {
-            logIcon.setVisibility(View.VISIBLE);
-            logIcon.setImageResource(R.drawable.baseline_lock_open_black_48);
-            logDisplay.setText("ログイン");
-            logDisplay.setTextColor(Color.parseColor("#0000ff"));
-            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_blue));
-        }
+
+//        ImageView logIcon = findViewById(R.id.ivLogIcon);
+//        logIcon.setVisibility(View.INVISIBLE);
+//        LinearLayout logFrame = findViewById(R.id.logFrame);
+//        TextView logDisplay = findViewById(R.id.tvLogDisplay);
+//        if (flag == false) {
+//            logIcon.setVisibility(View.VISIBLE);
+//            logIcon.setImageResource(R.drawable.baseline_lock_black_48);
+//            logDisplay.setText("ログアウト");
+//            logDisplay.setTextColor(Color.parseColor("#ff0000"));
+////            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_red));
+//        }
+//        if (flag == true) {
+//            logIcon.setVisibility(View.VISIBLE);
+//            logIcon.setImageResource(R.drawable.baseline_lock_open_black_48);
+//            logDisplay.setText("ログイン");
+//            logDisplay.setTextColor(Color.parseColor("#0000ff"));
+////            logFrame.setBackground(getResources().getDrawable(R.drawable.frame_blue));
+//        }
     }
 
     @Override
