@@ -126,16 +126,21 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
 
     @Override
     protected void onPostExecute(String[][] result){
+        TextView tvDisplaySentence_1 = ChoiceActivity.findViewById(R.id.tvDisplaySentence_1);
+        TextView tvDisplaySentence_2 = ChoiceActivity.findViewById(R.id.tvDisplaySentence_2);
         for (int i = 0; i < result.length; i++){
             //
             // ユーザーの表示・非表示
             //
+            if (btnFlag_1 == false && btnFlag_2 == false && btnFlag_3 == false){
+                tvDisplaySentence_1.setText("対応者が不在です。");
+                tvDisplaySentence_2.setText("お近くの受付カウンターから受付を行ってください。");
+                break;
+            }
             if (i == 0){
                 // ユーザー１
                 Button btn1 = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
                 if (btnFlag_1 == false){
-                    btn1.setVisibility(View.INVISIBLE);
-                    btn1.setVisibility(View.GONE);
                     continue;
                 } else {
                     peerId_1 = result[i][1];
@@ -158,8 +163,6 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                 // ユーザー２
                 Button btn2 = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
                 if (btnFlag_2 == false){
-                    btn2.setVisibility(View.INVISIBLE);
-                    btn2.setVisibility(View.GONE);
                     return;
                 } else {
                     peerId_2 = result[i][1];
@@ -182,8 +185,6 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
                 // ユーザー３
                 Button btn3 = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
                 if (btnFlag_3 == false){
-                    btn3.setVisibility(View.INVISIBLE);
-                    btn3.setVisibility(View.GONE);
                     return;
                 } else {
                     peerId_3 = result[i][1];

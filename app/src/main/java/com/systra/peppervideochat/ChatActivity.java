@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -61,9 +62,11 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     private String email;
     private String pass;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
         QiSDK.register(this, this);
 
         Intent getIntent = getIntent();
@@ -75,10 +78,13 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
 
+        // 「CALL」ボタンの初期表示
+        ImageButton btTextCall = findViewById(R.id.btCallAction);
+        btTextCall.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
+
         // Windowタイトルの非表示
         Window window = getWindow();
         window.addFlags(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_chat);
 
         // UI handlerの設定
         _handler = new Handler(Looper.getMainLooper());
@@ -144,7 +150,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         //
         // GUI event Listenerの設定
         //
-        Button btCallAction = findViewById(R.id.btCallAction);
+        ImageButton btCallAction = findViewById(R.id.btCallAction);
         btCallAction.setEnabled(true);
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
@@ -365,12 +371,12 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     @SuppressLint("SetTextI18n")
     void updateActionButtonTitle() {
         _handler.post(() -> {
-            Button btTextCallChange = findViewById(R.id.btCallAction);
+            ImageButton btTextCallChange = findViewById(R.id.btCallAction);
             if (null != btTextCallChange) {
                 if (!_bConnected) {
-                    btTextCallChange.setText("CALL");
+                    btTextCallChange.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
                 } else {
-                    btTextCallChange.setText("END");
+                    btTextCallChange.setBackground(ContextCompat.getDrawable(this, R.drawable.end));
                 }
             }
         });

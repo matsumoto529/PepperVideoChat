@@ -7,23 +7,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-<!--    <Button-->
-<!--        android:id="@+id/btNext"-->
-<!--        android:onClick="onButtonClick"-->
-<!--        android:drawableLeft=""-->
-<!--        android:background="@drawable/button_call_blue"-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="300dp"-->
-<!--        android:layout_weight="2"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:layout_marginLeft="200dp"-->
-<!--        android:layout_marginTop="48dp"-->
-<!--        android:layout_marginRight="200dp"-->
-<!--        android:layout_marginBottom="100dp"-->
-<!--        android:text="オペレーター選択画面へ"-->
-<!--        android:textSize="45sp"-->
-<!--        android:textColor="#3e3a39"-->
-<!--        android:textStyle="bold"/>-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,33 +26,9 @@
         android:layout_width="330dp"
         android:layout_height="330dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="225dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginRight="225dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
         android:layout_weight="2"
-        android:background="#fafafa"
+        android:background="@null"
         android:onClick="onButtonClick"/>
-    <!--    <LinearLayout-->
-<!--        android:id="@+id/logFrame"-->
-<!--        android:layout_width="110dp"-->
-<!--        android:layout_height="36dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:layout_marginLeft="800dp">-->
-<!--        <ImageView-->
-<!--            android:id="@+id/ivLogIcon"-->
-<!--            android:layout_width="20dp"-->
-<!--            android:layout_height="20dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginLeft="2dp"/>-->
-<!--        <TextView-->
-<!--            android:id="@+id/tvLogDisplay"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:paddingLeft="2dp"-->
-<!--            android:text=""-->
-<!--            android:textSize="15sp"-->
-<!--            android:textStyle="bold"/>-->
-<!--    </LinearLayout>-->
 </LinearLayout>
