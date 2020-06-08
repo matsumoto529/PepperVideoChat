@@ -27,7 +27,9 @@ import androidx.core.content.ContextCompat;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 import io.skyway.Peer.Browser.Canvas;
 import io.skyway.Peer.Browser.MediaConstraints;
@@ -43,13 +45,15 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     private static final String TAG = ChatActivity.class.getSimpleName();
     private Boolean flag = true;
 
+    private Boolean callFlag = false;
+
     //
     // SkyWay関連の設定
     //
     private static final String API_KEY = "1949a178-d084-4566-830a-83c6d070dcfb"; // Pepperビデオ通話用のSkyWayのAPIキー
     private static final String DOMAIN = "windfield.work"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
 
-    private Peer _peer;
+    private Peer _peer; //
     private MediaStream _localStream; // PC側の通話設定
     private MediaStream _remoteStream; // Pepper側の通話設定
     private MediaConnection _mediaConnection;
@@ -151,7 +155,9 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         btCallAction.setEnabled(true);
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
-            if (!_bConnected) {
+            if (!_bConnected && callFlag == false) {
+                // 接続中の処理
+                callFlag = true;
                 Toast toast = Toast.makeText(this, "呼び出しています。\nしばらくお待ちください。", Toast.LENGTH_SHORT); // テキスト内容は変更する
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 View view = toast.getView();
@@ -159,8 +165,20 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 toast.show();
                 String PeerID = peerIdPc;
                 onPeerSelected(PeerID);
-            } else {
-                // 電話を切る
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_1_ " + callFlag);
+            }else if(_bConnected && callFlag == true) {
+                callFlag = false;
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_2_ " + callFlag);
+                Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
+                flag = true;
+                intent.putExtra("FLAG", flag);
+                intent.putExtra("EMAIL", email);
+                intent.putExtra("PASS", pass);
+                finish();
+                startActivity(intent);
+            } else if (_bConnected && callFlag == false){
+                // 通話を切る
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_3_ " + callFlag);
                 closeRemoteStream();
                 _mediaConnection.close();
             }
@@ -168,6 +186,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         });
         Button btBackAction = findViewById(R.id.btBackAction);
         btBackAction.setOnClickListener(v -> {
+            callFlag = false;
             Intent intent = new Intent(ChatActivity.this, MainActivity.class);
             flag = true;
             intent.putExtra("FLAG", flag);
@@ -254,6 +273,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             _remoteStream = (MediaStream) object;
             Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
+            callFlag = false;
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_call中_ " + callFlag);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
             closeRemoteStream();
@@ -377,6 +398,10 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
+        Say say = SayBuilder.with(qiContext)
+                .withText("\\vol=150\\あああ")
+                .build();
+        say.async().run();
 
     }
 
