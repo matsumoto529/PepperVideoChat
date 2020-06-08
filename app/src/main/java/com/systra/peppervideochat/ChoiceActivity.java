@@ -16,6 +16,7 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
 public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
     private Boolean flag = true;
+    private Boolean serifFlag;
 
     private String email;
     private String pass;
@@ -80,7 +81,18 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-
+//        System.out.println("eeeeeeeeeeeeeeeeeeeee_serifFlag_" + serifFlag);
+//        if (serifFlag = false) {
+//            Say say = SayBuilder.with(qiContext)
+//                    .withText("ごめんなさい。対応者が不在です。")
+//                    .build();
+//            say.async().run();
+//        } else {
+//            Say say = SayBuilder.with(qiContext)
+//                    .withText("対応者を選んでください！")
+//                    .build();
+//            say.async().run();
+//        }
     }
 
     @Override

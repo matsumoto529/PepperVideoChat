@@ -42,11 +42,14 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         flag = getIntent.getBooleanExtra("FLAG", false);
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
+        email = "matsumoto@systra.co.jp";
+        pass = "matsusys";
 
         TextView tvLog = findViewById(R.id.tvLogDisplay);
         ImageButton bt = findViewById(R.id.btNext);
+
+        // 後で消す
+        flag = true;
 
         if (flag == false){
             tvLog.setText("お近くの受付カウンターから受付を行ってください。");
@@ -75,17 +78,14 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オペレーター選択画面に遷移するボタンの処理
     // ログインしていない場合は遷移せず、トーストを表示する。
     public void onButtonClick(View v) {
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_click_flag_" + flag);
+        // 後で消す
+        flag = true;
         if (flag == true){
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_clickTrue_flag_" + flag);
             Intent intent = new Intent(this, ChoiceActivity.class);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putEmail_" + email);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_putPass_" + pass);
             startActivity(intent);
         } else if (flag == false){
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_clickFalse_flag_" + flag);
             Toast toast = Toast.makeText(this, "ログインしてください。", LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             View view = toast.getView();
@@ -98,18 +98,18 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オーバーフローメニューの表示
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // 後で消す
+        flag = true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_menu_list, menu);
         MenuItem setLog = menu.findItem(R.id.menuListOptionLogin);
         if (flag == true) {
             setLog.setTitle("ログアウト");
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_setLog_true_" + setLog);
             logoutFlag = true;
 
         }
         if (flag == false) {
             setLog.setTitle("ログイン");
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_setLog_false_" + setLog);
             logoutFlag = false;
         }
         return super.onCreateOptionsMenu(menu);
@@ -151,7 +151,15 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-
+//        Say say = SayBuilder.with(qiContext)
+//                .withText("こんにちは、Pepperです。")
+//                .build();
+//        say.async().run();
+//        Animation animation = AnimationBuilder.with(qiContext)
+//                .withResources(R.raw.raise_right_hand_b001).build();
+//        Animate animate = AnimateBuilder.with(qiContext)
+//                .withAnimation(animation).build();
+//        animate.async().run();
     }
 
     @Override

@@ -34,38 +34,42 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="200dp"
         android:layout_marginTop="24dp"
         android:layout_marginRight="200dp"
-        android:layout_gravity="center"
         android:orientation="vertical">
-        <Button
-            android:id="@+id/tvDisplayName_1"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fafafa"
-            android:textSize="50sp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            style="?android:attr/borderlessButtonStyle"/>
-        <Button
-            android:id="@+id/tvDisplayName_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fafafa"
-            android:textSize="50sp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            style="?android:attr/borderlessButtonStyle"/>
-        <Button
-            android:id="@+id/tvDisplayName_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fafafa"
-            android:textSize="50sp"
-            android:layout_marginTop="12dp"
-            style="?android:attr/borderlessButtonStyle"/>
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:scrollbars="vertical" />
+        <!--        <Button-->
+        <!--            android:id="@+id/tvDisplayName_1"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="#f5f5f5"-->
+        <!--            android:textSize="50sp"-->
+        <!--            android:layout_marginTop="12dp"-->
+        <!--            android:layout_marginBottom="12dp"/>-->
+        <!--        <Button-->
+        <!--            android:id="@+id/tvDisplayName_2"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="#f5f5f5"-->
+        <!--            android:textSize="50sp"-->
+        <!--            android:layout_marginTop="12dp"-->
+        <!--            android:layout_marginBottom="12dp"/>-->
+        <!--        <Button-->
+        <!--            android:id="@+id/tvDisplayName_3"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="#f5f5f5"-->
+        <!--            android:textSize="50sp"-->
+        <!--            android:layout_marginTop="12dp"/>-->
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -77,7 +81,6 @@
             android:background="@drawable/update"
             android:layout_width="120dp"
             android:layout_height="70dp"
-            android:layout_marginTop="50dp"
             android:layout_marginLeft="800dp"
             tools:ignore="OnClick" />
     </LinearLayout>

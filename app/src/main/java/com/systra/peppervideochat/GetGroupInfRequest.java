@@ -1,11 +1,11 @@
 package com.systra.peppervideochat;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,18 +21,16 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]> {
-    private final com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
+    private static com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
+
+    private Boolean flag = false;
 
     private String email;
     private String pass;
 
-    private String peerId_1;
-    private String peerId_2;
-    private String peerId_3;
-
-    private Boolean btnFlag_1 = false;
-    private Boolean btnFlag_2 = false;
-    private Boolean btnFlag_3 = false;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
 
     public GetGroupInfRequest(ChoiceActivity activity){
@@ -51,7 +49,8 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         HttpsURLConnection tokenUrlConnection;
         BufferedReader tokenBr;
 
-        String[][] user = new String[3][2];
+        int userCount;
+        String[][] user = new String[2][];
 
         try {
             tokenUrl = new URL(requestTokenUrl);
@@ -83,35 +82,37 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
             }
             String jsonText = sb.toString();
             JSONArray data = new JSONArray(jsonText);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_data_" + data);
+
+            userCount = data.length();
+            System.out.println("eeeeeeeeeeeeeeeeee_userCount_" + userCount);
+            user = new String[2][userCount];
 
             for (int i = 0; i < data.length(); i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
-                if (i == 0) {
-                    user[i][0] = jsonObject.getString("display_name");
-                    user[i][1] = jsonObject.getString("caller_peer_id");
-                    if (user[i][1] != null){
-                        btnFlag_1 = true;
-                    }
-                } else if (i == 1) {
-                    user[i][0] = jsonObject.getString("display_name");
-                    user[i][1] = jsonObject.getString("caller_peer_id");
-                    if (user[i][1] != null){
-                        btnFlag_2 = true;
-                    }
-                } else if (i == 2) {
-                    user[i][0] = jsonObject.getString("display_name");
-                    user[i][1] = jsonObject.getString("caller_peer_id");
-                    if (user[i][1] != null){
-                        btnFlag_3 = true;
-                    }
-                }
+                user[0][i] = jsonObject.getString("display_name");
+                user[1][i] = jsonObject.getString("caller_peer_id");
+                System.out.println("eeeeeeeeeeeeeeeeee_user[0][i]_ " + i + " : " + user[0][i]);
+                System.out.println("eeeeeeeeeeeeeeeeee_user[1][i]_ " + i + " : " + user[1][i]);
             }
 
-            br.close();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[0]_" + user[0][0] + " : " + user[0][1] + " : " + btnFlag_1);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[1]_" + user[1][0] + " : " + user[1][1] + " : " + btnFlag_2);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_user[2]_" + user[2][0] + " : " + user[2][1] + " : " + btnFlag_3);
+//            // 試し用データ
+//            user[0][2] = "3人目";
+//            user[1][2] = "cneuwhewcn";
+//            user[0][3] = "4人目";
+//            user[1][3] = "jkfandlknda";
+//            user[0][4] = "5人目";
+//            user[1][4] = "cwrcnrwcvd";
+//
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[0][2]_ " + user[0][2]);
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[1][2]_ " + user[1][2]);
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[0][2]_ " + user[0][3]);
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[1][2]_ " + user[1][3]);
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[0][2]_ " + user[0][4]);
+//            System.out.println("eeeeeeeeeeeeeeeeee_user[1][2]_ " + user[1][4]);
+
+            if (data.length() == 0) {
+                flag = true;
+            }
         } catch (MalformedURLException e)  {
             e.printStackTrace();
         } catch (ProtocolException e) {
@@ -128,82 +129,35 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
     protected void onPostExecute(String[][] result){
         TextView tvDisplaySentence_1 = ChoiceActivity.findViewById(R.id.tvDisplaySentence_1);
         TextView tvDisplaySentence_2 = ChoiceActivity.findViewById(R.id.tvDisplaySentence_2);
-        for (int i = 0; i < result.length; i++){
-            //
-            // ユーザーの表示・非表示
-            //
-            if (btnFlag_1 == false && btnFlag_2 == false && btnFlag_3 == false){
-                tvDisplaySentence_1.setText("対応者が不在です。");
-                tvDisplaySentence_2.setText("お近くの受付カウンターから受付を行ってください。");
+
+        recyclerView = ChoiceActivity.findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(ChoiceActivity);
+        recyclerView.setLayoutManager(layoutManager);
+
+        String[] disName = new String[result[0].length];
+        String[] peerId = new String[result[0].length];
+        System.out.println("eeeeeeeeeeeeeeeeee_result[0].length_ " + result[0].length);
+
+        if (flag == true) {
+            tvDisplaySentence_1.setText("対応者が不在です。");
+            tvDisplaySentence_2.setText("お近くの受付カウンターから受付を行ってください。");
+        }
+        int count;
+        for (count = 0; count < result[0].length; count++) {
+            System.out.println("eeeeeeeeeeeeeeeeee_result[0][i]_ " + count + " : " + result[0][count]);
+            System.out.println("eeeeeeeeeeeeeeeeee_result[1][i]_ " + count + " : " + result[1][count]);
+            disName[count] = result[0][count];
+            peerId[count] = result[1][count];
+            if (disName[count] == null) {
                 break;
             }
-            if (i == 0){
-                // ユーザー１
-                Button btn1 = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
-                if (btnFlag_1 == false){
-                    continue;
-                } else {
-                    peerId_1 = result[i][1];
-                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_1);
-                    tv.setText(result[i][0]);
-                    btn1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_1_" + peerId_1);
-                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
-                            intent.putExtra("PEERID", peerId_1);
-                            intent.putExtra("EMAIL", email);
-                            intent.putExtra("PASS", pass);
-                            ChoiceActivity.finish();
-                            ChoiceActivity.startActivity(intent);
-                        }
-                    });
-                }
-            } else if (i == 1){
-                // ユーザー２
-                Button btn2 = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
-                if (btnFlag_2 == false){
-                    return;
-                } else {
-                    peerId_2 = result[i][1];
-                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_2);
-                    tv.setText(result[i][0]);
-                    btn2.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_2_" + peerId_2);
-                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
-                            intent.putExtra("PEERID", peerId_2);
-                            intent.putExtra("EMAIL", email);
-                            intent.putExtra("PASS", pass);
-                            ChoiceActivity.finish();
-                            ChoiceActivity.startActivity(intent);
-                        }
-                    });
-                }
-            } else if (i == 2){
-                // ユーザー３
-                Button btn3 = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
-                if (btnFlag_3 == false){
-                    return;
-                } else {
-                    peerId_3 = result[i][1];
-                    TextView tv = ChoiceActivity.findViewById(R.id.tvDisplayName_3);
-                    tv.setText(result[i][0]);
-                    btn3.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_3_" + peerId_3);
-                            Intent intent = new Intent(ChoiceActivity, ChatActivity.class);
-                            intent.putExtra("PEERID", peerId_3);
-                            intent.putExtra("EMAIL", email);
-                            intent.putExtra("PASS", pass);
-                            ChoiceActivity.finish();
-                            ChoiceActivity.startActivity(intent);
-                        }
-                    });
-                }
-            }
         }
+        mAdapter = new MyAdapter(disName, peerId, email, pass, count);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    public static void AppFinish(){
+        ChoiceActivity.finish();
     }
 }

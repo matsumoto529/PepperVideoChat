@@ -74,13 +74,14 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         peerIdPc = getIntent.getStringExtra("PEERID");
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPeerId_" + peerIdPc);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getEmail_" + email);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_getPass_" + pass);
 
         // 「CALL」ボタンの初期表示
         ImageButton btTextCall = findViewById(R.id.btCallAction);
         btTextCall.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
+
+        // 「BACK」ボタンの表示
+        Button btTextBack = findViewById(R.id.btBackAction);
+        btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.back));
 
         // Windowタイトルの非表示
         Window window = getWindow();
@@ -95,7 +96,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         peerOption.key = API_KEY;
         peerOption.domain = DOMAIN;
         _peer = new Peer(this, peerOption);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerOp_" + peerOption);
 
         //
         // Peer event callbacksの設定
@@ -105,8 +105,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         _peer.on(Peer.PeerEventEnum.OPEN, object -> {
             // 許可をリクエスト
             peerId = object.toString();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_" + object);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerId_" + peerId);
             // PeerIDの登録
             Uri.Builder builder = new Uri.Builder();
             PeerIdRegister pir = new PeerIdRegister(this);
@@ -125,7 +123,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
         // CALL(電話の着信)
         _peer.on(Peer.PeerEventEnum.CALL, object -> {
-//            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_peerIdCall_" + peerId);
             if (!(object instanceof MediaConnection)) {
                 return;
             }
@@ -161,7 +158,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 view.setBackgroundColor(Color.rgb(128, 128, 128));
                 toast.show();
                 String PeerID = peerIdPc;
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_PeerID_" + PeerID);
                 onPeerSelected(PeerID);
             } else {
                 // 電話を切る
@@ -255,19 +251,16 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     //
     void setMediaCallBack() {
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, object -> {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_STREAM_" + object);
             _remoteStream = (MediaStream) object;
             Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_CLOSE_" + object);
             closeRemoteStream();
             _bConnected = false;
             updateActionButtonTitle();
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.ERROR, object -> {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_object_ERROR_" + object);
             PeerError peerError = (PeerError) object;
             Log.d(TAG, "[On/MediaError]" + peerError);
         });
@@ -339,11 +332,11 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         Canvas canvas = findViewById(R.id.vRemoteView);
         _remoteStream.removeVideoRenderer(canvas, 0);
         _remoteStream.close();
-        Toast toast = Toast.makeText(this, "キャンセルされました。", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        View view = toast.getView();
-        view.setBackgroundColor(Color.rgb(128, 128, 128));
-        toast.show();
+//        Toast toast = Toast.makeText(this, "キャンセルされました。", Toast.LENGTH_SHORT);
+//        toast.setGravity(Gravity.CENTER, 0, 0);
+//        View view = toast.getView();
+//        view.setBackgroundColor(Color.rgb(128, 128, 128));
+//        toast.show();
     }
 
     //

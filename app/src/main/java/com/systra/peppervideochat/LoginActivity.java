@@ -32,8 +32,6 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
 
     public void flag(Boolean result) {
         flag = result;
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainFlag_result_" + result);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainFlag_flag_" + flag);
     }
 
 
@@ -72,8 +70,6 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
     public void onButtonClick(View view) {
         _email = String.valueOf(email.getText());
         _pass = String.valueOf(pass.getText());
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_main_email_" + _email);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_main_pass_" + _pass);
 
         Uri.Builder builder = new Uri.Builder();
         GetLoginInfRequest glir = new GetLoginInfRequest(this);
@@ -82,9 +78,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_main_flag_" + flag);
                 if (flag == true) {
-                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainTrue_flag_" + flag);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("FLAG", flag);
                     intent.putExtra("EMAIL", _email);
@@ -98,7 +92,6 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     toast.show();
                 }
                 if (flag == false) {
-                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_mainFalse_flag_" + flag);
                     Toast toast = Toast.makeText(LoginActivity.this, "ログインできませんでした。\nメールアドレス、パスワードが正しいかご確認ください。", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     View view = toast.getView();

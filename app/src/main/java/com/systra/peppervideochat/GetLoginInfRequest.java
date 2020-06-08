@@ -36,7 +36,6 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Uri.Builder... builder) {
         String requestTokenUrl = "https://windfield.work/api/login?email=" + email + "&password=" + pass;
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_a_" + requestTokenUrl);
         URL tokenUrl = null;
         HttpsURLConnection tokenUrlConnection = null;
         BufferedReader tokenBr = null;
@@ -57,22 +56,16 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
             JSONObject tokenParentJO = null;
             String accessToken = "";
             try {
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_例外処理前_");
                 tokenParentJO = new JSONObject(tokenJsonText);
                 accessToken = tokenParentJO.getString("access_token");
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_accessToken_" + accessToken);
             } catch (JSONException e) {
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_例外処理後_");
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_MalformedURLException_");
         } catch (ParcelFormatException e) {
             e.printStackTrace();
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_ParcelFormatException_");
         } catch (IOException e) {
             flag = false;
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_IOException_");
         } finally {
             return flag;
         }
@@ -80,7 +73,6 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeee_result_flag_" + result);
         LoginActivity la = LoginActivity;
         la.flag(result);
     }
