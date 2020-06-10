@@ -3,6 +3,7 @@ package com.systra.peppervideochat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -27,9 +28,7 @@ import androidx.core.content.ContextCompat;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
-import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
-import com.aldebaran.qi.sdk.object.conversation.Say;
 
 import io.skyway.Peer.Browser.Canvas;
 import io.skyway.Peer.Browser.MediaConstraints;
@@ -66,6 +65,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     private String email;
     private String pass;
 
+    private AudioManager mAudioManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,16 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         // 「BACK」ボタンの表示
         Button btTextBack = findViewById(R.id.btBackAction);
         btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.back));
+
+        // 音量調整
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int vol = 60;
+        mAudioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, vol, AudioManager.FLAG_SHOW_UI);
+//        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, vol, AudioManager.FLAG_SHOW_UI);
+        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_SYSTEM);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_ " + nowVol);
+
+
 
         // Windowタイトルの非表示
         Window window = getWindow();
@@ -165,10 +176,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 toast.show();
                 String PeerID = peerIdPc;
                 onPeerSelected(PeerID);
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_1_ " + callFlag);
             }else if(_bConnected && callFlag == true) {
                 callFlag = false;
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_2_ " + callFlag);
                 Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
                 flag = true;
                 intent.putExtra("FLAG", flag);
@@ -178,7 +187,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 startActivity(intent);
             } else if (_bConnected && callFlag == false){
                 // 通話を切る
-                System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_3_ " + callFlag);
                 closeRemoteStream();
                 _mediaConnection.close();
             }
@@ -273,8 +281,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             _remoteStream = (MediaStream) object;
             Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeee_setMediaCallBack_ " + callFlag);
             callFlag = false;
-            System.out.println("eeeeeeeeeeeeeeeeeeeeeee_callFlag_call中_ " + callFlag);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
             closeRemoteStream();
@@ -398,10 +406,10 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-        Say say = SayBuilder.with(qiContext)
-                .withText("\\vol=150\\あああ")
-                .build();
-        say.async().run();
+//        Say say = SayBuilder.with(qiContext)
+//                .withText("\\vol=60\\こんにちは。")
+//                .build();
+//        say.async().run();
 
     }
 

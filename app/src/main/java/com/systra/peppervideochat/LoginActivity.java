@@ -75,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         GetLoginInfRequest glir = new GetLoginInfRequest(this);
         glir.add(_email, _pass);
         glir.execute(builder);
+        // ログイン有無時の処理
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

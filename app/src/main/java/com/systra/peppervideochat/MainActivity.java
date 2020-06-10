@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         setContentView(R.layout.activity_main);
         QiSDK.register(this, this);
 
+        // データ取得
         Intent getIntent = getIntent();
         flag = getIntent.getBooleanExtra("FLAG", false);
         email = getIntent.getStringExtra("EMAIL");
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         // 後で消す
         flag = true;
 
+        // ログイン有無によるテキストの変更
         if (flag == false){
             tvLog.setText("お近くの受付カウンターから受付を行ってください。");
             bt.setEnabled(false);
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         }
     }
 
+    // アプリ終了の処理
     protected void finishApp(){
         finish();
     }
