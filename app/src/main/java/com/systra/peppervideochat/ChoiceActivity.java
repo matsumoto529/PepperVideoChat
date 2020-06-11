@@ -3,6 +3,8 @@ package com.systra.peppervideochat;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +17,12 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
 public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
-    private Boolean flag = true;
+    private Boolean flag = true; // ログインしているかの有無
+    private static Boolean intentFlag = true; //
     private Boolean serifFlag;
 
-    private String email;
-    private String pass;
+    private String email; // メールアドレス保持用
+    private String pass; // パスワード保持用
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,6 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Uri.Builder builder = new Uri.Builder();
-
         GetGroupInfRequest ggir = new GetGroupInfRequest(this);
         ggir.add(email, pass);
         ggir.execute(builder);
@@ -45,6 +47,8 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         // 更新ボタンの処理内容の呼び出し
         Button updateButton = findViewById(R.id.update_button);
         updateButton.setOnClickListener(this::reload);
+
+        automaticTransition(intentFlag);
     }
 
     // 戻るボタンの処理
@@ -59,6 +63,8 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
             intent.putExtra("PASS", pass);
             finish();
             startActivity(intent);
+            intentFlag = false;
+            automaticTransition(intentFlag);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -71,6 +77,27 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         finish();
         overridePendingTransition(0,0);
         startActivity(intent);
+        intentFlag = false;
+        automaticTransition(intentFlag);
+    }
+
+    public void automaticTransition(Boolean intFlag) {
+        intentFlag = intFlag;
+        // 放置されている場合、60秒後にメイン画面に戻る
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (intentFlag == true){
+                    Intent intent = new Intent(ChoiceActivity.this, MainActivity.class);
+                    flag = true;
+                    intent.putExtra("FLAG", flag);
+                    intent.putExtra("EMAIL", email);
+                    intent.putExtra("PASS", pass);
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        }, 60000);
     }
 
     @Override

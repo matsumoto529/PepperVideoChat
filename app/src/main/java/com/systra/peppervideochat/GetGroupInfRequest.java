@@ -23,10 +23,10 @@ import javax.net.ssl.HttpsURLConnection;
 public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]> {
     private static com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
 
-    private Boolean flag = false;
+    private Boolean flag = false; // ログインしているユーザーが1人以上いるかどうかの有無
 
-    private String email;
-    private String pass;
+    private String email; // メールアドレス保持用
+    private String pass; // パスワード保持用
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -84,9 +84,9 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
             JSONArray data = new JSONArray(jsonText);
 
             userCount = data.length();
-            System.out.println("eeeeeeeeeeeeeeeeee_userCount_" + userCount);
             user = new String[2][userCount];
 
+            // 表示アカウント名とPeerIDを取り出す
             for (int i = 0; i < data.length(); i++) {
                 JSONObject jsonObject = data.getJSONObject(i);
                 user[0][i] = jsonObject.getString("display_name");
@@ -110,6 +110,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
 //            System.out.println("eeeeeeeeeeeeeeeeee_user[0][2]_ " + user[0][4]);
 //            System.out.println("eeeeeeeeeeeeeeeeee_user[1][2]_ " + user[1][4]);
 
+            // オンラインのユーザーが0人の時
             if (data.length() == 0) {
                 flag = true;
             }
@@ -125,6 +126,9 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         return user;
     }
 
+    //
+    // オンライン状態の人数に合わせてボタンを作成
+    //
     @Override
     protected void onPostExecute(String[][] result){
         TextView tvDisplaySentence_1 = ChoiceActivity.findViewById(R.id.tvDisplaySentence_1);
@@ -139,6 +143,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         String[] peerId = new String[result[0].length];
         System.out.println("eeeeeeeeeeeeeeeeee_result[0].length_ " + result[0].length);
 
+        // オンラインのユーザーが0人の時の処理
         if (flag == true) {
             tvDisplaySentence_1.setText("対応者が不在です。");
             tvDisplaySentence_2.setText("お近くの受付カウンターから受付を行ってください。");
@@ -158,6 +163,9 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
     }
 
     public static void AppFinish(){
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee________________________ ");
+        Boolean flag = false;
+        ChoiceActivity.automaticTransition(flag);
         ChoiceActivity.finish();
     }
 }

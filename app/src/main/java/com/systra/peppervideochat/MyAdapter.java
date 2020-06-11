@@ -11,11 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    private static com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
     private String[] displayName;
     private String[] peerId;
-    private String email;
-    private String pass;
-    private int count;
+    private String email; // メールアドレス保持用
+    private String pass; // パスワード保持用
+    private int count; // オンラインの人数
 
     // 各データ項目のビューへの参照を提供します
     // 複雑なデータアイテムでは、アイテムごとに複数のビューが必要になる場合があります。
