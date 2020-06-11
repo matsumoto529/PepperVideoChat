@@ -19,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,8 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import io.skyway.Peer.Browser.Canvas;
 import io.skyway.Peer.Browser.MediaConstraints;
@@ -42,9 +45,10 @@ import io.skyway.Peer.PeerOption;
 
 public class ChatActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = ChatActivity.class.getSimpleName();
-    private Boolean flag = true;
 
-    private Boolean callFlag = false;
+    private Boolean flag = true; // ログインしているかの有無
+
+    private Boolean callFlag = false; // 呼び出ししているかの有無
 
     //
     // SkyWay関連の設定
@@ -60,10 +64,10 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     private boolean _bConnected; // CALLボタンの設定
     private Handler _handler; //
     private String peerId; // Pepper側のPeerID
-
     private String peerIdPc; // PC側のPeerID
-    private String email;
-    private String pass;
+
+    private String email; // メールアドレス保持用
+    private String pass; // パスワード保持用
 
     private AudioManager mAudioManager;
 
@@ -91,12 +95,16 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         // 音量調整
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int vol = 60;
-        mAudioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, vol, AudioManager.FLAG_SHOW_UI);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, AudioManager.FLAG_SHOW_UI);
 //        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, vol, AudioManager.FLAG_SHOW_UI);
-        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_SYSTEM);
+        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_ALARM);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_ " + nowVol);
 
-
+        // gifの設定
+        ImageView imageView = (ImageView) findViewById(R.id.gifView);
+        imageView.setAlpha(0);
+        GlideDrawableImageViewTarget target = new GlideDrawableImageViewTarget(imageView);
+        Glide.with(this).load(R.raw.calling).into(target);
 
         // Windowタイトルの非表示
         Window window = getWindow();
@@ -167,8 +175,9 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
             if (!_bConnected && callFlag == false) {
-                // 接続中の処理
+                // 通話待機中の処理
                 callFlag = true;
+                imageView.setAlpha(255);
                 Toast toast = Toast.makeText(this, "呼び出しています。\nしばらくお待ちください。", Toast.LENGTH_SHORT); // テキスト内容は変更する
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 View view = toast.getView();
@@ -176,7 +185,32 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 toast.show();
                 String PeerID = peerIdPc;
                 onPeerSelected(PeerID);
+
+                // 通話待機中、30秒間応答がない場合はユーザー選択画面に戻りトースト表示
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("eeeeeeeeeeeeeeeeeeeeee_30秒後に強制終了のやつ");
+                        if (callFlag == false){
+                        } else {
+                            callFlag = false;
+                            Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
+                            flag = true;
+                            intent.putExtra("FLAG", flag);
+                            intent.putExtra("EMAIL", email);
+                            intent.putExtra("PASS", pass);
+                            finish();
+                            startActivity(intent);
+                            Toast mToast = Toast.makeText(activity, "対応者が不在だったため\n切断しました。", Toast.LENGTH_LONG); // テキスト内容は変更する
+                            mToast.setGravity(Gravity.CENTER, 0, 0);
+                            View view = mToast.getView();
+                            view.setBackgroundColor(Color.rgb(128, 128, 128));
+                            mToast.show();
+                        }
+                    }
+                }, 30000);
             }else if(_bConnected && callFlag == true) {
+                // 通話待機中、「END」を押したときの処理
                 callFlag = false;
                 Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
                 flag = true;
@@ -186,12 +220,14 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 finish();
                 startActivity(intent);
             } else if (_bConnected && callFlag == false){
-                // 通話を切る
+                // 通話を切る処理
                 closeRemoteStream();
                 _mediaConnection.close();
             }
             v.setEnabled(true);
         });
+
+        // 「BACK」ボタンの処理
         Button btBackAction = findViewById(R.id.btBackAction);
         btBackAction.setOnClickListener(v -> {
             callFlag = false;
@@ -283,6 +319,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             _remoteStream.addVideoRenderer(canvas, 0);
             System.out.println("eeeeeeeeeeeeeeeeeeeeee_setMediaCallBack_ " + callFlag);
             callFlag = false;
+            ImageView imageView = (ImageView) findViewById(R.id.gifView);
+            imageView.setAlpha(0);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
             closeRemoteStream();

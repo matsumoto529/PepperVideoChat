@@ -19,10 +19,10 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
 
     private final com.systra.peppervideochat.LoginActivity LoginActivity;
 
-    private String email;
-    private String pass;
+    private String email; // リクエスト用メールアドレス
+    private String pass; // リクエスト用パスワード
 
-    Boolean flag = true;
+    Boolean flag = true; // ログインの有無
 
     public GetLoginInfRequest(LoginActivity loginActivity) {
         this.LoginActivity = loginActivity;

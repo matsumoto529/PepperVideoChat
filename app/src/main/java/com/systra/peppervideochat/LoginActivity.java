@@ -22,13 +22,13 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
 public class LoginActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
 
-    Boolean flag = false;
+    Boolean flag = false; // ログインの有無
 
-    EditText email;
-    EditText pass;
+    EditText email; // メールアドレスの文字列取得に使用
+    EditText pass; // パスワードの文字列取得に使用
 
-    private String _email;
-    private String _pass;
+    private String _email; // メールアドレス保持用
+    private String _pass; // パスワード保持用
 
     public void flag(Boolean result) {
         flag = result;
@@ -51,13 +51,16 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         email = findViewById(R.id.etMailaddress);
         pass = findViewById(R.id.etPassword);
 
+        // アプリを終了する処理
         findViewById(R.id.appFinishButton).setOnClickListener(v -> {
             MainActivity.finishFlag = true;
             finish();
         });
     }
 
+    //
     // 戻るボタンの処理
+    //
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
@@ -67,15 +70,19 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         return super.onOptionsItemSelected(item);
     }
 
+    //
+    // ログイン処理
+    //
     public void onButtonClick(View view) {
         _email = String.valueOf(email.getText());
         _pass = String.valueOf(pass.getText());
 
+        // WebAPIリクエスト
         Uri.Builder builder = new Uri.Builder();
         GetLoginInfRequest glir = new GetLoginInfRequest(this);
         glir.add(_email, _pass);
         glir.execute(builder);
-        // ログイン有無時の処理
+        // ログイン有無の処理(ボタンを押されて3秒待機)
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
