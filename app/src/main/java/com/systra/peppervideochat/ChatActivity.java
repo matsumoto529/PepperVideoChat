@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,12 +28,17 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.aldebaran.qi.AnyObject;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+
+import java.io.IOException;
 
 import io.skyway.Peer.Browser.Canvas;
 import io.skyway.Peer.Browser.MediaConstraints;
@@ -45,24 +52,28 @@ import io.skyway.Peer.PeerOption;
 
 public class ChatActivity extends RobotActivity implements RobotLifecycleCallbacks {
     private static final String TAG = ChatActivity.class.getSimpleName();
-
-    private Boolean flag = true; // ログインしているかの有無
-
-    private Boolean callFlag = false; // 呼び出ししているかの有無
+    // ログインしているかの有無
+    //true=ログイン状態、false=ログアウト状態
+    private Boolean flag = true;
+    // 呼び出ししているかの有無
+    // true=呼出中、false=待機中
+    private Boolean callFlag = false;
+    // 呼出時の発信音の有無
+    // true=呼出中、false=待機中
+    private Boolean incomingFlag = false;
 
     //
     // SkyWay関連の設定
     //
     private static final String API_KEY = "1949a178-d084-4566-830a-83c6d070dcfb"; // Pepperビデオ通話用のSkyWayのAPIキー
     private static final String DOMAIN = "windfield.work"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
-
-    private Peer _peer; //
+    private Peer _peer;
     private MediaStream _localStream; // PC側の通話設定
     private MediaStream _remoteStream; // Pepper側の通話設定
     private MediaConnection _mediaConnection;
 
     private boolean _bConnected; // CALLボタンの設定
-    private Handler _handler; //
+    private Handler _handler;
     private String peerId; // Pepper側のPeerID
     private String peerIdPc; // PC側のPeerID
 
@@ -71,6 +82,24 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private AudioManager mAudioManager;
 
+    MediaPlayer mediaPlayer = new MediaPlayer();
+
+    private AnyObject mALTextToSpeech = null;
+
+    // handlerの初期設定
+    public Handler handler = new Handler();
+    Runnable my_runnable = new Runnable() {
+        @Override
+        public void run() {
+            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+            flag = true;
+            intent.putExtra("FLAG", flag);
+            intent.putExtra("EMAIL", email);
+            intent.putExtra("PASS", pass);
+            finish();
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +107,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         setContentView(R.layout.activity_chat);
         QiSDK.register(this, this);
 
+        // データ取得
         Intent getIntent = getIntent();
         flag = getIntent.getBooleanExtra("FLAG", true);
         peerIdPc = getIntent.getStringExtra("PEERID");
@@ -89,16 +119,29 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         btTextCall.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
 
         // 「BACK」ボタンの表示
-        Button btTextBack = findViewById(R.id.btBackAction);
-        btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.back));
+        Button btTextBack = findViewById(R.id.btHomeAction);
+        btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.home));
+
+        // 放置されている場合、60秒後にメイン画面に戻る処理
+        start();
 
         // 音量調整
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int vol = 60;
-        mAudioManager.setStreamVolume(AudioManager.STREAM_ALARM, vol, AudioManager.FLAG_SHOW_UI);
-//        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, vol, AudioManager.FLAG_SHOW_UI);
-        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+        // 呼出中の発信音の音量(5が適正)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_SHOW_UI);
+        // 通話の音量(10が適正)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 10, AudioManager.FLAG_SHOW_UI);
+        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_ " + nowVol);
+
+        String filePath = "incomingSound.mp3";
+        try {
+            AssetFileDescriptor afDescriptor = getAssets().openFd(filePath);
+            mediaPlayer.setDataSource(afDescriptor.getFileDescriptor(), afDescriptor.getStartOffset(), afDescriptor.getLength());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // gifの設定
         ImageView imageView = (ImageView) findViewById(R.id.gifView);
@@ -174,7 +217,15 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         btCallAction.setEnabled(true);
         btCallAction.setOnClickListener(v -> {
             v.setEnabled(false);
-            if (!_bConnected && callFlag == false) {
+            if (!_bConnected && !callFlag) {
+                //
+                // 呼出中
+                //
+
+                // handlerを止める
+                stop();
+                // 発信音
+                incoming(true);
                 // 通話待機中の処理
                 callFlag = true;
                 imageView.setAlpha(255);
@@ -191,7 +242,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                     @Override
                     public void run() {
                         System.out.println("eeeeeeeeeeeeeeeeeeeeee_30秒後に強制終了のやつ");
-                        if (callFlag == false){
+                        if (!callFlag){
                         } else {
                             callFlag = false;
                             Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
@@ -209,7 +260,17 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                         }
                     }
                 }, 30000);
-            }else if(_bConnected && callFlag == true) {
+            } else if(_bConnected && callFlag) {
+                //
+                // 呼出中に「END」を押す
+                //
+
+                // (前の時は5)
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+                // handlerを止める
+                stop();
+                // 発信音
+                incoming(false);
                 // 通話待機中、「END」を押したときの処理
                 callFlag = false;
                 Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
@@ -219,7 +280,14 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 intent.putExtra("PASS", pass);
                 finish();
                 startActivity(intent);
-            } else if (_bConnected && callFlag == false){
+            } else if (_bConnected && !callFlag){
+                // (前の時は5)
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+                // handlerを止める
+                stop();
+                // 発信音
+                incomingFlag = false;
+                incoming(incomingFlag);
                 // 通話を切る処理
                 closeRemoteStream();
                 _mediaConnection.close();
@@ -227,9 +295,11 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             v.setEnabled(true);
         });
 
-        // 「BACK」ボタンの処理
-        Button btBackAction = findViewById(R.id.btBackAction);
-        btBackAction.setOnClickListener(v -> {
+        // 「HOME」ボタンの処理
+        Button btHomeAction = findViewById(R.id.btHomeAction);
+        btHomeAction.setOnClickListener(v -> {
+            // handlerを止める
+            stop();
             callFlag = false;
             Intent intent = new Intent(ChatActivity.this, MainActivity.class);
             flag = true;
@@ -258,6 +328,36 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         }
     }
 
+    public void incoming(Boolean result) {
+        incomingFlag = result;
+        Button bt = findViewById(R.id.btHomeAction);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_incomingFlag_" + incomingFlag);
+            if (incomingFlag == true){
+                // (前の時は9)
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 6, AudioManager.FLAG_SHOW_UI);
+                bt.setEnabled(false);
+                System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_START_");
+                mediaPlayer.start();
+                mediaPlayer.setLooping(true);
+            } else if (incomingFlag == false){
+//                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_SHOW_UI);
+                bt.setEnabled(true);
+                System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_STOP_");
+                mediaPlayer.stop();
+            }
+    }
+
+    // handlerを始める処理
+    public void start() {
+        handler.postDelayed(my_runnable, 60000);
+    }
+
+    // handlerを止める処理
+    public void stop() {
+        handler.removeCallbacks(my_runnable);
+    }
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -283,11 +383,17 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     protected void onStop() {
+        // 発信音
+        incoming(false);
+
         super.onStop();
         // スリープと画面ロックを有効にする
         Window window = getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        //
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
 
     @Override
@@ -305,7 +411,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         MediaConstraints constraints = new MediaConstraints();
         _localStream = Navigator.getUserMedia(constraints);
 
-        Canvas canvas = (Canvas) findViewById(R.id.vLocalView);
+        Canvas canvas = findViewById(R.id.vLocalView);
         _localStream.addVideoRenderer(canvas, 0);
     }
 
@@ -321,6 +427,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             callFlag = false;
             ImageView imageView = (ImageView) findViewById(R.id.gifView);
             imageView.setAlpha(0);
+            // 発信音
+            incoming(false);
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
             closeRemoteStream();
@@ -399,11 +507,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         Canvas canvas = findViewById(R.id.vRemoteView);
         _remoteStream.removeVideoRenderer(canvas, 0);
         _remoteStream.close();
-//        Toast toast = Toast.makeText(this, "キャンセルされました。", Toast.LENGTH_SHORT);
-//        toast.setGravity(Gravity.CENTER, 0, 0);
-//        View view = toast.getView();
-//        view.setBackgroundColor(Color.rgb(128, 128, 128));
-//        toast.show();
     }
 
     //
@@ -444,11 +547,10 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-//        Say say = SayBuilder.with(qiContext)
-//                .withText("\\vol=60\\こんにちは。")
-//                .build();
-//        say.async().run();
-
+        Say say = SayBuilder.with(qiContext)
+                .withText("音量テスト")
+                .build();
+        say.async().run();
     }
 
     @Override

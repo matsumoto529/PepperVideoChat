@@ -21,8 +21,9 @@ import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 
 public class LoginActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
-
-    Boolean flag = false; // ログインの有無
+    // ログインしているかの有無
+    //true=ログイン状態、false=ログアウト状態
+    Boolean flag = false;
 
     EditText email; // メールアドレスの文字列取得に使用
     EditText pass; // パスワードの文字列取得に使用
@@ -86,7 +87,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (flag == true) {
+                if (flag) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("FLAG", flag);
                     intent.putExtra("EMAIL", _email);
@@ -99,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     view.setBackgroundColor(Color.rgb(128, 128, 128));
                     toast.show();
                 }
-                if (flag == false) {
+                if (!flag) {
                     Toast toast = Toast.makeText(LoginActivity.this, "ログインできませんでした。\nメールアドレス、パスワードが正しいかご確認ください。", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     View view = toast.getView();

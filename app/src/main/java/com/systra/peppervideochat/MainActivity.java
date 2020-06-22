@@ -23,13 +23,18 @@ import static android.widget.Toast.LENGTH_LONG;
 
 
 public class MainActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
-
+    // ログインしているかの有無
+    //true=ログイン状態、false=ログアウト状態
     Boolean flag;
+    // ログアウトしてるかどうかの有無(上記とは別の役割)
+    // true=ログアウト状態、true=ログイン状態
     Boolean logoutFlag;
+    // アプリを終了するかどうかの有無
+    // true=終了、false=継続
     public static Boolean finishFlag = false;
 
-    private String email;
-    private String pass;
+    private String email; // メールアドレス保持用
+    private String pass; // パスワード保持用
 
 
     @Override
@@ -53,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         flag = true;
 
         // ログイン有無によるテキストの変更
-        if (flag == false){
+        if (!flag){
             tvLog.setText("お近くの受付カウンターから受付を行ってください。");
             bt.setEnabled(false);
             bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_false));
         }
-        if (flag == true){
+        if (flag){
             tvLog.setText("来客の方は画面をタッチしてください。");
             bt.setEnabled(true);
             bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_true));
@@ -68,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     protected void onResume(){
         super.onResume();
+        // trueの時アプリ終了
         if (finishFlag){
             finishApp();
         }
@@ -83,12 +89,12 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     public void onButtonClick(View v) {
         // 後で消す
         flag = true;
-        if (flag == true){
+        if (flag){
             Intent intent = new Intent(this, ChoiceActivity.class);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
             startActivity(intent);
-        } else if (flag == false){
+        } else if (!flag){
             Toast toast = Toast.makeText(this, "ログインしてください。", LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             View view = toast.getView();
@@ -106,12 +112,12 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_menu_list, menu);
         MenuItem setLog = menu.findItem(R.id.menuListOptionLogin);
-        if (flag == true) {
+        if (flag) {
             setLog.setTitle("ログアウト");
             logoutFlag = true;
 
         }
-        if (flag == false) {
+        if (!flag) {
             setLog.setTitle("ログイン");
             logoutFlag = false;
         }
@@ -122,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (logoutFlag == false) {
+        if (!logoutFlag) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-        if (logoutFlag == true) {
+        if (logoutFlag) {
             logout();
             Toast toast = Toast.makeText(this, "ログアウトしました。", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
