@@ -58,15 +58,16 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         flag = true;
 
         // ログイン有無によるテキストの変更
+        // false=ログアウト状態、true=ログイン状態
         if (!flag){
             tvLog.setText("お近くの受付カウンターから受付を行ってください。");
             bt.setEnabled(false);
-            bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_false));
+            bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_false_2));
         }
         if (flag){
             tvLog.setText("来客の方は画面をタッチしてください。");
             bt.setEnabled(true);
-            bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_true));
+            bt.setBackground(ContextCompat.getDrawable(this, R.drawable.main_screen_illustration_true_2));
         }
     }
 

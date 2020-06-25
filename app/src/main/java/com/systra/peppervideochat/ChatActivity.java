@@ -1,9 +1,10 @@
 package com.systra.peppervideochat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,13 +28,10 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.aldebaran.qi.AnyObject;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
-import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
-import com.aldebaran.qi.sdk.object.conversation.Say;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
@@ -84,8 +81,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     MediaPlayer mediaPlayer = new MediaPlayer();
 
-    private AnyObject mALTextToSpeech = null;
-
     // handlerの初期設定
     public Handler handler = new Handler();
     Runnable my_runnable = new Runnable() {
@@ -114,10 +109,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
 
-        // 「CALL」ボタンの初期表示
-        ImageButton btTextCall = findViewById(R.id.btCallAction);
-        btTextCall.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
-
         // 「BACK」ボタンの表示
         Button btTextBack = findViewById(R.id.btHomeAction);
         btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.home));
@@ -128,11 +119,11 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         // 音量調整
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         // 呼出中の発信音の音量(5が適正)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_SHOW_UI);
-        // 通話の音量(10が適正)
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+        // 通話の音量(MAX7、7が適正)
         mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 10, AudioManager.FLAG_SHOW_UI);
-        int nowVol = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_ " + nowVol);
+        int nowVol_1 = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_1_ " + nowVol_1);
 
         String filePath = "incomingSound.mp3";
         try {
@@ -183,6 +174,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, 0);
             } else {
                 // localのMediaStreamを取得して表示
+                System.out.println("eeeeeeeeeeeeeeeeeeeeee_startLocalStream_ ");
                 startLocalStream();
             }
         });
@@ -193,11 +185,11 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 return;
             }
             _mediaConnection = (MediaConnection) object;
+            System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaConnection_ " + _mediaConnection);
             setMediaCallBack();
             _mediaConnection.answer(_localStream);
 
             _bConnected = true;
-            updateActionButtonTitle();
         });
 
         // CLOSE(切断)
@@ -208,91 +200,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         _peer.on(Peer.PeerEventEnum.ERROR, object -> {
             PeerError error = (PeerError) object;
             Log.d(TAG, "[On/Error]" + error.message);
-        });
-
-        //
-        // GUI event Listenerの設定
-        //
-        ImageButton btCallAction = findViewById(R.id.btCallAction);
-        btCallAction.setEnabled(true);
-        btCallAction.setOnClickListener(v -> {
-            v.setEnabled(false);
-            if (!_bConnected && !callFlag) {
-                //
-                // 呼出中
-                //
-
-                // handlerを止める
-                stop();
-                // 発信音
-                incoming(true);
-                // 通話待機中の処理
-                callFlag = true;
-                imageView.setAlpha(255);
-                Toast toast = Toast.makeText(this, "呼び出しています。\nしばらくお待ちください。", Toast.LENGTH_SHORT); // テキスト内容は変更する
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                View view = toast.getView();
-                view.setBackgroundColor(Color.rgb(128, 128, 128));
-                toast.show();
-                String PeerID = peerIdPc;
-                onPeerSelected(PeerID);
-
-                // 通話待機中、30秒間応答がない場合はユーザー選択画面に戻りトースト表示
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("eeeeeeeeeeeeeeeeeeeeee_30秒後に強制終了のやつ");
-                        if (!callFlag){
-                        } else {
-                            callFlag = false;
-                            Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
-                            flag = true;
-                            intent.putExtra("FLAG", flag);
-                            intent.putExtra("EMAIL", email);
-                            intent.putExtra("PASS", pass);
-                            finish();
-                            startActivity(intent);
-                            Toast mToast = Toast.makeText(activity, "対応者が不在だったため\n切断しました。", Toast.LENGTH_LONG); // テキスト内容は変更する
-                            mToast.setGravity(Gravity.CENTER, 0, 0);
-                            View view = mToast.getView();
-                            view.setBackgroundColor(Color.rgb(128, 128, 128));
-                            mToast.show();
-                        }
-                    }
-                }, 30000);
-            } else if(_bConnected && callFlag) {
-                //
-                // 呼出中に「END」を押す
-                //
-
-                // (前の時は5)
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
-                // handlerを止める
-                stop();
-                // 発信音
-                incoming(false);
-                // 通話待機中、「END」を押したときの処理
-                callFlag = false;
-                Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
-                flag = true;
-                intent.putExtra("FLAG", flag);
-                intent.putExtra("EMAIL", email);
-                intent.putExtra("PASS", pass);
-                finish();
-                startActivity(intent);
-            } else if (_bConnected && !callFlag){
-                // (前の時は5)
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
-                // handlerを止める
-                stop();
-                // 発信音
-                incomingFlag = false;
-                incoming(incomingFlag);
-                // 通話を切る処理
-                closeRemoteStream();
-                _mediaConnection.close();
-            }
-            v.setEnabled(true);
         });
 
         // 「HOME」ボタンの処理
@@ -309,6 +216,74 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             finish();
             startActivity(intent);
         });
+    }
+
+    public void callStart() {
+        ImageView imageView = (ImageView) findViewById(R.id.gifView);
+        //
+        // GUI event Listenerの設定
+        //
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!_bConnected && !callFlag) {
+                    //
+                    // 呼出中
+                    //
+
+                    // handlerを止める
+                    stop();
+                    // 発信音
+                    incoming(true);
+                    // 通話待機中の処理
+                    callFlag = true;
+                    imageView.setAlpha(255);
+                    String PeerID = peerIdPc;
+                    onPeerSelected(PeerID);
+
+                    // 通話待機中、30秒間応答がない場合はユーザー選択画面に戻りトースト表示
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("eeeeeeeeeeeeeeeeeeeeee_30秒後に強制終了のやつ");
+                            if (!callFlag){
+                            } else {
+                                incomingFlag = false;
+                                incoming(incomingFlag);
+                                callFlag = false;
+                                flag = true;
+                                new AlertDialog.Builder(ChatActivity.this)
+                                        .setTitle("Title")
+                                        .setMessage("対応者が不在だったため切断しました。")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent intent = new Intent(ChatActivity.this, ChoiceActivity.class);
+                                                intent.putExtra("FLAG", flag);
+                                                intent.putExtra("EMAIL", email);
+                                                intent.putExtra("PASS", pass);
+                                                finish();
+                                                startActivity(intent);
+                                            }
+                                        }).show();
+                            }
+                        }
+                    }, 30000);
+                }
+                else if (_bConnected && !callFlag){
+                    // (前の時は5)
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+                    // handlerを止める
+                    stop();
+                    // 発信音
+                    incomingFlag = false;
+                    incoming(incomingFlag);
+                    // 通話を切る処理
+                    closeRemoteStream();
+                    _mediaConnection.close();
+                }
+            }
+        }, 2000);
     }
 
     // 許可ダイアログの承認結果を受け取る(許可・不許可)
@@ -330,18 +305,15 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     public void incoming(Boolean result) {
         incomingFlag = result;
-        Button bt = findViewById(R.id.btHomeAction);
         System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_incomingFlag_" + incomingFlag);
             if (incomingFlag == true){
                 // (前の時は9)
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 6, AudioManager.FLAG_SHOW_UI);
-                bt.setEnabled(false);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 4, AudioManager.FLAG_SHOW_UI);
                 System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_START_");
                 mediaPlayer.start();
                 mediaPlayer.setLooping(true);
             } else if (incomingFlag == false){
 //                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_SHOW_UI);
-                bt.setEnabled(true);
                 System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_STOP_");
                 mediaPlayer.stop();
             }
@@ -404,7 +376,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     //
-    // ローカルのMediaEventsを取得して表示
+    // ローカルのMediaEventsを取得
     //
     void startLocalStream() {
         Navigator.initialize(_peer); // _peerを初期化
@@ -413,6 +385,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
         Canvas canvas = findViewById(R.id.vLocalView);
         _localStream.addVideoRenderer(canvas, 0);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_startLocalStream_locallocal_ " + _localStream);
+        callStart();
     }
 
     //
@@ -421,6 +395,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     void setMediaCallBack() {
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, object -> {
             _remoteStream = (MediaStream) object;
+            System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaConnection_2_ " + _mediaConnection);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeee_remoteStream_ " + _remoteStream);
             Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
             System.out.println("eeeeeeeeeeeeeeeeeeeeee_setMediaCallBack_ " + callFlag);
@@ -433,7 +409,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         _mediaConnection.on(MediaConnection.MediaEventEnum.CLOSE, object -> {
             closeRemoteStream();
             _bConnected = false;
-            updateActionButtonTitle();
         });
         _mediaConnection.on(MediaConnection.MediaEventEnum.ERROR, object -> {
             PeerError peerError = (PeerError) object;
@@ -507,6 +482,13 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         Canvas canvas = findViewById(R.id.vRemoteView);
         _remoteStream.removeVideoRenderer(canvas, 0);
         _remoteStream.close();
+        Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+        flag = true;
+        intent.putExtra("FLAG", flag);
+        intent.putExtra("EMAIL", email);
+        intent.putExtra("PASS", pass);
+        finish();
+        startActivity(intent);
     }
 
     //
@@ -521,36 +503,23 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         }
         CallOption callOption = new CallOption();
         _mediaConnection = _peer.call(strPeerId, _localStream, callOption);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + strPeerId);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + _localStream);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + callOption);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + _mediaConnection);
         if (null != _mediaConnection) {
+            System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL ");
             setMediaCallBack();
             _bConnected = true;
         }
-        updateActionButtonTitle();
-    }
-
-    //
-    // CALLボタンを更新
-    //
-    @SuppressLint("SetTextI18n")
-    void updateActionButtonTitle() {
-        _handler.post(() -> {
-            ImageButton btTextCallChange = findViewById(R.id.btCallAction);
-            if (null != btTextCallChange) {
-                if (!_bConnected) {
-                    btTextCallChange.setBackground(ContextCompat.getDrawable(this, R.drawable.call));
-                } else {
-                    btTextCallChange.setBackground(ContextCompat.getDrawable(this, R.drawable.end));
-                }
-            }
-        });
     }
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-        Say say = SayBuilder.with(qiContext)
-                .withText("音量テスト")
-                .build();
-        say.async().run();
+//        Say say = SayBuilder.with(qiContext)
+//                .withText("音量テスト")
+//                .build();
+//        say.async().run();
     }
 
     @Override
