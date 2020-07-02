@@ -28,6 +28,7 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
 
     private String email; // メールアドレス保持用
     private String pass; // パスワード保持用
+    private int volume; // 音量保持用
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -38,9 +39,10 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         this.ChoiceActivity = activity;
     }
 
-    public void add(String _email, String _pass) {
+    public void add(String _email, String _pass, int _volume) {
         email = _email;
         pass = _pass;
+        volume = _volume;
     }
 
     @Override
@@ -125,7 +127,6 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
 
         String[] disName = new String[result[0].length];
         String[] peerId = new String[result[0].length];
-        System.out.println("eeeeeeeeeeeeeeeeee_result[0].length_ " + result[0].length);
 
         // オンラインのユーザーが0人の時の処理
         if (flag) {
@@ -134,15 +135,13 @@ public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]>
         }
         int count;
         for (count = 0; count < result[0].length; count++) {
-            System.out.println("eeeeeeeeeeeeeeeeee_result[0][i]_ " + count + " : " + result[0][count]);
-            System.out.println("eeeeeeeeeeeeeeeeee_result[1][i]_ " + count + " : " + result[1][count]);
             disName[count] = result[0][count];
             peerId[count] = result[1][count];
             if (disName[count] == null) {
                 break;
             }
         }
-        mAdapter = new MyAdapter(disName, peerId, email, pass, count);
+        mAdapter = new MyAdapter(disName, peerId, email, pass, volume, count);
         recyclerView.setAdapter(mAdapter);
     }
 

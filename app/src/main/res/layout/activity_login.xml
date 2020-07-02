@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,14 +12,12 @@
         android:text="管理者のメールアドレスとパスワードを入力してください！"
         android:textSize="25sp"
         android:textColor="#000000"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginTop="40dp"
         android:orientation="horizontal">
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="horizontal">
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,33 +67,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <Button
             android:id="@+id/btLogin"
             android:layout_width="377dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="360dp"
+            android:layout_height="90dp"
+            android:layout_marginLeft="300dp"
             android:layout_marginRight="240dp"
-            android:layout_weight="0.2"
-            android:background="@drawable/button_call_blue"
-            android:onClick="onButtonClick"
-            android:text="ログイン"
-            android:textColor="#000000"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/appFinishButton"
-            android:layout_width="200dp"
-            android:layout_height="68dp"
-            android:layout_weight="0.2"
-            android:layout_gravity="right"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/button_back_gray"
-            android:onClick="onButtonFinish"
-            android:text="アプリ\n終了"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/login"
+            android:onClick="onButtonClick"/>
     </LinearLayout>
 </LinearLayout>

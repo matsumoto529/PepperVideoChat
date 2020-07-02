@@ -64,7 +64,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     //
     private static final String API_KEY = "1949a178-d084-4566-830a-83c6d070dcfb"; // Pepperビデオ通話用のSkyWayのAPIキー
     private static final String DOMAIN = "windfield.work"; // Pepperビデオ通話用のSkyWayに登録している利用可能なドメイン
-    private Peer _peer;
+    private Peer _peer; // PeerID
     private MediaStream _localStream; // PC側の通話設定
     private MediaStream _remoteStream; // Pepper側の通話設定
     private MediaConnection _mediaConnection;
@@ -76,10 +76,13 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     private String email; // メールアドレス保持用
     private String pass; // パスワード保持用
+    private int volume; // 音量保持用
 
     private AudioManager mAudioManager;
 
     MediaPlayer mediaPlayer = new MediaPlayer();
+
+    int callVol;
 
     // handlerの初期設定
     public Handler handler = new Handler();
@@ -91,6 +94,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
+            intent.putExtra("VOL", volume);
             finish();
             startActivity(intent);
         }
@@ -108,10 +112,18 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         peerIdPc = getIntent.getStringExtra("PEERID");
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
+        volume = getIntent.getIntExtra("VOL", 0);
 
         // 「BACK」ボタンの表示
-        Button btTextBack = findViewById(R.id.btHomeAction);
-        btTextBack.setBackground(ContextCompat.getDrawable(this, R.drawable.home));
+        Button btHomeAction = findViewById(R.id.btHomeAction);
+        btHomeAction.setBackground(ContextCompat.getDrawable(this, R.drawable.home));
+        btHomeAction.setEnabled(false);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                btHomeAction.setEnabled(true);
+            }
+        }, 2500);
 
         // 放置されている場合、60秒後にメイン画面に戻る処理
         start();
@@ -119,11 +131,14 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         // 音量調整
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         // 呼出中の発信音の音量(5が適正)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_SHOW_UI);
         // 通話の音量(MAX7、7が適正)
-        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 10, AudioManager.FLAG_SHOW_UI);
-        int nowVol_1 = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeee_nowVol_1_ " + nowVol_1);
+        if (volume == 0) {
+            callVol = 0;
+        } else {
+            callVol = volume + 2;
+        }
+        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, callVol, AudioManager.FLAG_SHOW_UI);
 
         String filePath = "incomingSound.mp3";
         try {
@@ -174,7 +189,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, 0);
             } else {
                 // localのMediaStreamを取得して表示
-                System.out.println("eeeeeeeeeeeeeeeeeeeeee_startLocalStream_ ");
                 startLocalStream();
             }
         });
@@ -185,7 +199,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 return;
             }
             _mediaConnection = (MediaConnection) object;
-            System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaConnection_ " + _mediaConnection);
             setMediaCallBack();
             _mediaConnection.answer(_localStream);
 
@@ -203,7 +216,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         });
 
         // 「HOME」ボタンの処理
-        Button btHomeAction = findViewById(R.id.btHomeAction);
         btHomeAction.setOnClickListener(v -> {
             // handlerを止める
             stop();
@@ -213,6 +225,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
             intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
+            intent.putExtra("VOL", volume);
             finish();
             startActivity(intent);
         });
@@ -245,7 +258,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("eeeeeeeeeeeeeeeeeeeeee_30秒後に強制終了のやつ");
                             if (!callFlag){
                             } else {
                                 incomingFlag = false;
@@ -262,6 +274,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                                                 intent.putExtra("FLAG", flag);
                                                 intent.putExtra("EMAIL", email);
                                                 intent.putExtra("PASS", pass);
+                                                intent.putExtra("VOL", volume);
                                                 finish();
                                                 startActivity(intent);
                                             }
@@ -272,7 +285,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 }
                 else if (_bConnected && !callFlag){
                     // (前の時は5)
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 2, AudioManager.FLAG_SHOW_UI);
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_SHOW_UI);
                     // handlerを止める
                     stop();
                     // 発信音
@@ -305,16 +318,18 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
     public void incoming(Boolean result) {
         incomingFlag = result;
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_incomingFlag_" + incomingFlag);
+//        int _callVol;
             if (incomingFlag == true){
+                if (volume == 0) {
+                    callVol = 0;
+                } else {
+                    callVol = volume + 2;
+                }
                 // (前の時は9)
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 4, AudioManager.FLAG_SHOW_UI);
-                System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_START_");
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, callVol, AudioManager.FLAG_SHOW_UI);
                 mediaPlayer.start();
                 mediaPlayer.setLooping(true);
             } else if (incomingFlag == false){
-//                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 5, AudioManager.FLAG_SHOW_UI);
-                System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaPlayer_STOP_");
                 mediaPlayer.stop();
             }
     }
@@ -385,7 +400,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
         Canvas canvas = findViewById(R.id.vLocalView);
         _localStream.addVideoRenderer(canvas, 0);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_startLocalStream_locallocal_ " + _localStream);
         callStart();
     }
 
@@ -395,11 +409,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     void setMediaCallBack() {
         _mediaConnection.on(MediaConnection.MediaEventEnum.STREAM, object -> {
             _remoteStream = (MediaStream) object;
-            System.out.println("eeeeeeeeeeeeeeeeeeeeee_mediaConnection_2_ " + _mediaConnection);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeee_remoteStream_ " + _remoteStream);
             Canvas canvas = findViewById(R.id.vRemoteView);
             _remoteStream.addVideoRenderer(canvas, 0);
-            System.out.println("eeeeeeeeeeeeeeeeeeeeee_setMediaCallBack_ " + callFlag);
             callFlag = false;
             ImageView imageView = (ImageView) findViewById(R.id.gifView);
             imageView.setAlpha(0);
@@ -487,6 +498,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         intent.putExtra("FLAG", flag);
         intent.putExtra("EMAIL", email);
         intent.putExtra("PASS", pass);
+        intent.putExtra("VOL", volume);
         finish();
         startActivity(intent);
     }
@@ -503,12 +515,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         }
         CallOption callOption = new CallOption();
         _mediaConnection = _peer.call(strPeerId, _localStream, callOption);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + strPeerId);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + _localStream);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + callOption);
-        System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL_aaaaaaaaaaaaaaaaaaaaa_ " + _mediaConnection);
         if (null != _mediaConnection) {
-            System.out.println("eeeeeeeeeeeeeeeeeeeeee_CALL ");
             setMediaCallBack();
             _bConnected = true;
         }

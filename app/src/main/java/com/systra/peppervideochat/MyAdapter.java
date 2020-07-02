@@ -16,6 +16,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private String[] peerId;
     private String email; // メールアドレス保持用
     private String pass; // パスワード保持用
+    private int volume; // 音量保持用
     private int count; // オンラインの人数
 
     // 各データ項目のビューへの参照を提供します
@@ -31,11 +32,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // 適切なコンストラクターを提供します（データセットの種類によって異なります）
-    public MyAdapter(String[] _displayName, String[] _peerId, String _email, String _pass, int _count) {
+    public MyAdapter(String[] _displayName, String[] _peerId, String _email, String _pass, int _volume, int _count) {
         displayName = _displayName;
         peerId = _peerId;
         email = _email;
         pass = _pass;
+        volume = _volume;
         count = _count;
     }
 
@@ -56,6 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             intent.putExtra("PEERID", peer);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
+            intent.putExtra("VOL", volume);
             context.startActivity(intent);
             GetGroupInfRequest.AppFinish();
         });

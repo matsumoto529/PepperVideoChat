@@ -23,6 +23,7 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
     private String email; // メールアドレス保持用
     private String pass; // パスワード保持用
+    private int volume; // 音量保持用
 
     // handlerの初期設定
     public Handler handler = new Handler();
@@ -34,6 +35,7 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
             intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
+            intent.putExtra("VOL", volume);
             finish();
             startActivity(intent);
         }
@@ -50,6 +52,7 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         flag = getIntent.getBooleanExtra("FLAG", true);
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
+        volume = getIntent.getIntExtra("VOL", 0);
 
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
@@ -57,7 +60,7 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
         Uri.Builder builder = new Uri.Builder();
         GetGroupInfRequest ggir = new GetGroupInfRequest(this);
-        ggir.add(email, pass);
+        ggir.add(email, pass, volume);
         ggir.execute(builder);
 
         // 更新ボタンの処理内容の呼び出し
@@ -73,7 +76,6 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
-//            System.out.println("eeeeeeeeeeeeeeeeeeeeee_onOptionsItemSelected_ ");
             // handlerを止める
             stop();
 
@@ -90,7 +92,6 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
     // 更新ボタンの処理内容
     public void reload(View view) {
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeee_reload_ ");
         // handlerを止める
         stop();
 
@@ -104,13 +105,11 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
     // handlerを始める処理
     public void start() {
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeee_ChoiceActivity_handler_start_始める_ ");
         handler.postDelayed(my_runnable, 60000);
     }
 
     // handlerを止める処理
     public void stop() {
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeee_ChoiceActivity_handler_stop_止める_ ");
         handler.removeCallbacks(my_runnable);
     }
 

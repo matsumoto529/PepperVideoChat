@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
     private String email; // メールアドレス保持用
     private String pass; // パスワード保持用
+    private int volume; // 音量保持用
 
 
     @Override
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         flag = getIntent.getBooleanExtra("FLAG", false);
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
+        volume = getIntent.getIntExtra("VOL", 0);
         email = "matsumoto@systra.co.jp";
         pass = "matsusys";
 
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         ImageButton bt = findViewById(R.id.btNext);
 
         // 後で消す
-        flag = true;
+//        flag = true;
 
         // ログイン有無によるテキストの変更
         // false=ログアウト状態、true=ログイン状態
@@ -89,11 +91,13 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // ログインしていない場合は遷移せず、トーストを表示する。
     public void onButtonClick(View v) {
         // 後で消す
-        flag = true;
+//        flag = true;
         if (flag){
             Intent intent = new Intent(this, ChoiceActivity.class);
+            intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
+            intent.putExtra("VOL", volume);
             startActivity(intent);
         } else if (!flag){
             Toast toast = Toast.makeText(this, "ログインしてください。", LENGTH_LONG);
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // 後で消す
-        flag = true;
+//        flag = true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_menu_list, menu);
         MenuItem setLog = menu.findItem(R.id.menuListOptionLogin);
@@ -129,20 +133,35 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (!logoutFlag) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-        if (logoutFlag) {
-            logout();
-            Toast toast = Toast.makeText(this, "ログアウトしました。", Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            View view = toast.getView();
-            view.setBackgroundColor(Color.rgb(128, 128, 128));
-            toast.show();
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.menuListOptionLogin:
+                if (!logoutFlag) {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.putExtra("VOL", volume);
+                    startActivity(intent);
+                }
+                if (logoutFlag) {
+                    logout();
+                    Toast toast = Toast.makeText(this, "ログアウトしました。", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    View view = toast.getView();
+                    view.setBackgroundColor(Color.rgb(128, 128, 128));
+                    toast.show();
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    intent.putExtra("VOL", volume);
+                    startActivity(intent);
+                    overridePendingTransition(0, 0);
+                }
+                break;
+            case R.id.menuListOptionSetting:
+                Intent intent = new Intent(this, SettingActivity.class);
+                intent.putExtra("FLAG", flag);
+                intent.putExtra("EMAIL", email);
+                intent.putExtra("PASS", pass);
+                intent.putExtra("VOL", volume);
+                startActivity(intent);
+                break;
         }
         return true;
     }

@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
 
     private String _email; // メールアドレス保持用
     private String _pass; // パスワード保持用
+    private int volume; // 音量保持用
 
     public void flag(Boolean result) {
         flag = result;
@@ -45,18 +46,16 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         // アクティビティ遷移時に自動的にキーボードが立ち上がらないようにする。
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        // データ取得
+        Intent getIntent = getIntent();
+        volume = getIntent.getIntExtra("VOL", 0);
+
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         email = findViewById(R.id.etMailaddress);
         pass = findViewById(R.id.etPassword);
-
-        // アプリを終了する処理
-        findViewById(R.id.appFinishButton).setOnClickListener(v -> {
-            MainActivity.finishFlag = true;
-            finish();
-        });
     }
 
     //
@@ -92,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     intent.putExtra("FLAG", flag);
                     intent.putExtra("EMAIL", _email);
                     intent.putExtra("PASS", _pass);
+                    intent.putExtra("VOL", volume);
                     finish();
                     startActivity(intent);
                     Toast toast = Toast.makeText(LoginActivity.this, "ログインしました。", Toast.LENGTH_SHORT);

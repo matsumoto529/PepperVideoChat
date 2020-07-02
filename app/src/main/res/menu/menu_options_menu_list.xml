@@ -5,4 +5,8 @@
         android:id="@+id/menuListOptionLogin"
         app:showAsAction="never"
         android:title="ログイン"/>
+    <item
+        android:id="@+id/menuListOptionSetting"
+        app:showAsAction="never"
+        android:title="設定"/>
 </menu>
