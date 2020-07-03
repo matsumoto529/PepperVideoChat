@@ -1,7 +1,10 @@
 package com.systra.peppervideochat;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,10 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
@@ -32,11 +37,15 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
     private String _pass; // パスワード保持用
     private int volume; // 音量保持用
 
+    ImageButton ibLogin;
+
+    private AudioManager audioManager;
+
     public void flag(Boolean result) {
         flag = result;
     }
 
-
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +59,16 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
         Intent getIntent = getIntent();
         volume = getIntent.getIntExtra("VOL", 0);
 
+        // 変更された音量をセットする(Pepperセリフ用)
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.AUDIOFOCUS_NONE);
+
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        ibLogin = findViewById(R.id.btLogin);
+        ibLogin.setBackground(ContextCompat.getDrawable(this, R.drawable.login));
 
         email = findViewById(R.id.etMailaddress);
         pass = findViewById(R.id.etPassword);
@@ -76,6 +92,15 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
     public void onButtonClick(View view) {
         _email = String.valueOf(email.getText());
         _pass = String.valueOf(pass.getText());
+
+        ibLogin.setEnabled(false);
+        ibLogin.setBackground(ContextCompat.getDrawable(this, R.drawable.login_pushed));
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ibLogin.setBackground(ContextCompat.getDrawable(LoginActivity.this, R.drawable.login));
+            }
+        }, 300);
 
         // WebAPIリクエスト
         Uri.Builder builder = new Uri.Builder();
@@ -107,6 +132,7 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
                     view.setBackgroundColor(Color.rgb(128, 128, 128));
                     toast.show();
                 }
+                ibLogin.setEnabled(true);
             }
         }, 3000);
     }

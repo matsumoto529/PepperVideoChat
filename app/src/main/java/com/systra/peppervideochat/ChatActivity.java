@@ -70,7 +70,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     private MediaConnection _mediaConnection;
 
     private boolean _bConnected; // CALLボタンの設定
-    private Handler _handler;
     private String peerId; // Pepper側のPeerID
     private String peerIdPc; // PC側のPeerID
 
@@ -83,22 +82,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
     MediaPlayer mediaPlayer = new MediaPlayer();
 
     int callVol;
-
-    // handlerの初期設定
-    public Handler handler = new Handler();
-    Runnable my_runnable = new Runnable() {
-        @Override
-        public void run() {
-            Intent intent = new Intent(ChatActivity.this, MainActivity.class);
-            flag = true;
-            intent.putExtra("FLAG", flag);
-            intent.putExtra("EMAIL", email);
-            intent.putExtra("PASS", pass);
-            intent.putExtra("VOL", volume);
-            finish();
-            startActivity(intent);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +107,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 btHomeAction.setEnabled(true);
             }
         }, 2500);
-
-        // 放置されている場合、60秒後にメイン画面に戻る処理
-        start();
 
         // 音量調整
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -160,7 +140,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
         window.addFlags(Window.FEATURE_NO_TITLE);
 
         // UI handlerの設定
-        _handler = new Handler(Looper.getMainLooper());
         final Activity activity = this;
 
         // Peerの初期化
@@ -217,8 +196,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
 
         // 「HOME」ボタンの処理
         btHomeAction.setOnClickListener(v -> {
-            // handlerを止める
-            stop();
             callFlag = false;
             Intent intent = new Intent(ChatActivity.this, MainActivity.class);
             flag = true;
@@ -244,8 +221,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                     // 呼出中
                     //
 
-                    // handlerを止める
-                    stop();
                     // 発信音
                     incoming(true);
                     // 通話待機中の処理
@@ -284,10 +259,7 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                     }, 30000);
                 }
                 else if (_bConnected && !callFlag){
-                    // (前の時は5)
                     mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_SHOW_UI);
-                    // handlerを止める
-                    stop();
                     // 発信音
                     incomingFlag = false;
                     incoming(incomingFlag);
@@ -323,7 +295,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 if (volume == 0) {
                     callVol = 0;
                 } else {
-                    callVol = volume + 2;
+                    // 呼出中の発信音の音量(6が適正)
+                    callVol = volume + 3;
                 }
                 // (前の時は9)
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, callVol, AudioManager.FLAG_SHOW_UI);
@@ -333,17 +306,6 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                 mediaPlayer.stop();
             }
     }
-
-    // handlerを始める処理
-    public void start() {
-        handler.postDelayed(my_runnable, 60000);
-    }
-
-    // handlerを止める処理
-    public void stop() {
-        handler.removeCallbacks(my_runnable);
-    }
-
 
     @Override
     protected void onStart() {

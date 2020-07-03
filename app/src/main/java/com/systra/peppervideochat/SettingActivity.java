@@ -31,6 +31,8 @@ public class SettingActivity extends AppCompatActivity {
     private String pass; // パスワード保持用
     private int volume; // 音量保持用
 
+    private int callVol = 0;
+
     private TextView textView;
     private SeekBar seekBar;
     private ImageButton musicButton;
@@ -39,7 +41,6 @@ public class SettingActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer = new MediaPlayer();
 
-    private int callVol;
 
     @SuppressLint("WrongViewCast")
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -63,6 +64,7 @@ public class SettingActivity extends AppCompatActivity {
             intent.putExtra("EMAIL", email);
             intent.putExtra("PASS", pass);
             intent.putExtra("VOL", volume);
+            System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_setVol_ " + volume);
             finish();
             startActivity(intent);
             mediaPlayer.stop();
@@ -102,7 +104,7 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
-        // 最大値(7に設定)
+        // 最大値(デフォルトは6、7くらい)
         seekBar.setMax(7);
 
         String filePath = "incomingSound.mp3";
@@ -123,7 +125,7 @@ public class SettingActivity extends AppCompatActivity {
                 String str = String.format(Locale.US, "%d", progress);
                 textView.setText(str);
                 volume = progress;
-                // 呼出中の発信音の音量(5が適正)
+                System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_onProgressChanged_ " + volume);
                 if (progress == 0 && musicFlag == false) {
                 } else if (musicFlag == true) {
                     music(true);
@@ -142,8 +144,11 @@ public class SettingActivity extends AppCompatActivity {
 
     public void music(Boolean _musicFlag) {
         musicFlag = _musicFlag;
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_music_ " + volume);
         if (musicFlag == true) {
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_SHOW_UI);
+            // 呼出中の発信音の音量(6が適正)
+            callVol = volume + 3;
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, callVol, AudioManager.FLAG_SHOW_UI);
         } else if (musicFlag == false) {
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_SHOW_UI);
         }

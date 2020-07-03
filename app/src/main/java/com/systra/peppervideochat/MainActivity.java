@@ -1,7 +1,9 @@
 package com.systra.peppervideochat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -18,6 +20,10 @@ import androidx.core.content.ContextCompat;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Say;
+
+import java.util.Calendar;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -37,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     private String pass; // パスワード保持用
     private int volume; // 音量保持用
 
+    final Calendar calendar = Calendar.getInstance();
+    final int minutes = calendar.get(Calendar.MINUTE);
+
+    private AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +54,29 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
         setContentView(R.layout.activity_main);
         QiSDK.register(this, this);
 
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_minutes_ " + minutes);
+
+//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_開始時刻_ " + seconds_1 + " ms");
+//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_終了時刻_ " + seconds_2 + " ms");
+//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_経過時間_ " + (seconds_2 - seconds_1) + " ms");
+
         // データ取得
         Intent getIntent = getIntent();
         flag = getIntent.getBooleanExtra("FLAG", false);
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
-        volume = getIntent.getIntExtra("VOL", 0);
+        // 基本は3でOK
+        volume = getIntent.getIntExtra("VOL", 2);
+        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_mainVol_ " + volume);
+        // 後で消す
         email = "matsumoto@systra.co.jp";
         pass = "matsusys";
+
+        // 変更された音量をセットする(Pepperセリフ用)
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.AUDIOFOCUS_NONE);
 
         TextView tvLog = findViewById(R.id.tvLogDisplay);
         ImageButton bt = findViewById(R.id.btNext);
@@ -189,6 +214,36 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 //        Animate animate = AnimateBuilder.with(qiContext)
 //                .withAnimation(animation).build();
 //        animate.async().run();
+
+//        // いけそうな案１
+//        final long seconds_1 = System.currentTimeMillis();
+//        int result = 0;
+//        for (int i = 0; i < (100000 * 10000); i++) {
+//            result += 1;
+//        }
+//        final long seconds_2 = System.currentTimeMillis();
+
+
+        while (true) {
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Say say = SayBuilder.with(qiContext)
+                    .withText("こんにちは、ペッパーです！　受付はこちらですヨーッ！")
+                    .build();
+            say.async().run();
+
+
+        }
+
+
+
+//
+//        while (true) {
+//            break;
+//        }
     }
 
     @Override

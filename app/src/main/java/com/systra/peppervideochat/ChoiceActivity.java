@@ -1,6 +1,8 @@
 package com.systra.peppervideochat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,6 +43,8 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         }
     };
 
+    private AudioManager audioManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +57,10 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
         volume = getIntent.getIntExtra("VOL", 0);
+
+        // 変更された音量をセットする(Pepperセリフ用)
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.AUDIOFOCUS_NONE);
 
         // 戻るボタンの作成
         ActionBar actionBar = getSupportActionBar();
