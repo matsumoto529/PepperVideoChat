@@ -59,6 +59,7 @@ public class SettingActivity extends AppCompatActivity {
 
         // 戻るボタンの処理
         findViewById(R.id.backButton).setOnClickListener(v -> {
+            mediaPlayer.stop();
             Intent intent = new Intent(SettingActivity.this, MainActivity.class);
             intent.putExtra("FLAG", flag);
             intent.putExtra("EMAIL", email);
@@ -67,7 +68,6 @@ public class SettingActivity extends AppCompatActivity {
             System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_setVol_ " + volume);
             finish();
             startActivity(intent);
-            mediaPlayer.stop();
         });
 
         // アプリを終了する処理
@@ -105,7 +105,7 @@ public class SettingActivity extends AppCompatActivity {
         });
 
         // 最大値(デフォルトは6、7くらい)
-        seekBar.setMax(7);
+        seekBar.setMax(12);
 
         String filePath = "incomingSound.mp3";
         try {
@@ -147,7 +147,7 @@ public class SettingActivity extends AppCompatActivity {
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_music_ " + volume);
         if (musicFlag == true) {
             // 呼出中の発信音の音量(6が適正)
-            callVol = volume + 3;
+            callVol = volume + 2;
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, callVol, AudioManager.FLAG_SHOW_UI);
         } else if (musicFlag == false) {
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FLAG_SHOW_UI);

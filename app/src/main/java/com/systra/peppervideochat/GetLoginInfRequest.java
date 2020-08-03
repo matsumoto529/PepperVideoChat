@@ -4,9 +4,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFormatException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,14 +49,6 @@ public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
                 if (tokenLine != null) { tokenSb.append(tokenLine); }
             }
             tokenBr.close();
-            String tokenJsonText = tokenSb.toString();
-            JSONObject tokenParentJO = null;
-            String accessToken = "";
-            try {
-                tokenParentJO = new JSONObject(tokenJsonText);
-                accessToken = tokenParentJO.getString("access_token");
-            } catch (JSONException e) {
-            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ParcelFormatException e) {

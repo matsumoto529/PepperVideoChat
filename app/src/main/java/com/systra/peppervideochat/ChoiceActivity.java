@@ -16,6 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.AnimateBuilder;
+import com.aldebaran.qi.sdk.builder.AnimationBuilder;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.actuation.Animate;
+import com.aldebaran.qi.sdk.object.actuation.Animation;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
     // ログインしているかの有無
@@ -129,28 +135,23 @@ public class ChoiceActivity extends AppCompatActivity implements RobotLifecycleC
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-//        System.out.println("eeeeeeeeeeeeeeeeeeeee_serifFlag_" + serifFlag);
-//        if (serifFlag = false) {
-//            Say say = SayBuilder.with(qiContext)
-//                    .withText("ごめんなさい。対応者が不在です。")
-//                    .build();
-//            say.async().run();
-//        } else {
-//            Say say = SayBuilder.with(qiContext)
-//                    .withText("対応者を選んでください！")
-//                    .build();
-//            say.async().run();
-//        }
+        Say say = SayBuilder.with(qiContext)
+                .withText("選択してください？")
+                .build();
+        say.async().run();
+        Animation animation = AnimationBuilder.with(qiContext)
+                .withResources(R.raw.flick_down_left_hand_b001).build();
+        Animate animate = AnimateBuilder.with(qiContext)
+                .withAnimation(animation).build();
+        animate.async().run();
     }
 
     @Override
     public void onRobotFocusLost() {
-
     }
 
     @Override
     public void onRobotFocusRefused(String reason) {
-
     }
 }
 

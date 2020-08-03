@@ -24,6 +24,12 @@ import androidx.core.content.ContextCompat;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.AnimateBuilder;
+import com.aldebaran.qi.sdk.builder.AnimationBuilder;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.actuation.Animate;
+import com.aldebaran.qi.sdk.object.actuation.Animation;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 public class LoginActivity extends AppCompatActivity implements RobotLifecycleCallbacks {
     // ログインしているかの有無
@@ -145,16 +151,23 @@ public class LoginActivity extends AppCompatActivity implements RobotLifecycleCa
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
+        Say say = SayBuilder.with(qiContext)
+                .withText("メールアドレスとパスワードを入力してください？")
+                .build();
+        say.async().run();
+        Animation animation = AnimationBuilder.with(qiContext)
+                .withResources(R.raw.gesture_both_hands_b001).build();
+        Animate animate = AnimateBuilder.with(qiContext)
+                .withAnimation(animation).build();
+        animate.async().run();
 
     }
 
     @Override
     public void onRobotFocusLost() {
-
     }
 
     @Override
     public void onRobotFocusRefused(String reason) {
-
     }
 }

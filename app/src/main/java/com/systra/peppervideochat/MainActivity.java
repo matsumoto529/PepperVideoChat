@@ -20,10 +20,12 @@ import androidx.core.content.ContextCompat;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.AnimateBuilder;
+import com.aldebaran.qi.sdk.builder.AnimationBuilder;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.actuation.Animate;
+import com.aldebaran.qi.sdk.object.actuation.Animation;
 import com.aldebaran.qi.sdk.object.conversation.Say;
-
-import java.util.Calendar;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -43,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     private String pass; // パスワード保持用
     private int volume; // 音量保持用
 
-    final Calendar calendar = Calendar.getInstance();
-    final int minutes = calendar.get(Calendar.MINUTE);
-
     private AudioManager audioManager;
 
     @Override
@@ -56,23 +55,14 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_minutes_ " + minutes);
-
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_開始時刻_ " + seconds_1 + " ms");
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_終了時刻_ " + seconds_2 + " ms");
-//        System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_経過時間_ " + (seconds_2 - seconds_1) + " ms");
-
         // データ取得
         Intent getIntent = getIntent();
         flag = getIntent.getBooleanExtra("FLAG", false);
         email = getIntent.getStringExtra("EMAIL");
         pass = getIntent.getStringExtra("PASS");
-        // 基本は3でOK
-        volume = getIntent.getIntExtra("VOL", 2);
+        // 基本は6でOK
+        volume = getIntent.getIntExtra("VOL", 3);
         System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_mainVol_ " + volume);
-        // 後で消す
-        email = "matsumoto@systra.co.jp";
-        pass = "matsusys";
 
         // 変更された音量をセットする(Pepperセリフ用)
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -80,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
         TextView tvLog = findViewById(R.id.tvLogDisplay);
         ImageButton bt = findViewById(R.id.btNext);
-
-        // 後で消す
-//        flag = true;
 
         // ログイン有無によるテキストの変更
         // false=ログアウト状態、true=ログイン状態
@@ -115,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オペレーター選択画面に遷移するボタンの処理
     // ログインしていない場合は遷移せず、トーストを表示する。
     public void onButtonClick(View v) {
-        // 後で消す
-//        flag = true;
         if (flag){
             Intent intent = new Intent(this, ChoiceActivity.class);
             intent.putExtra("FLAG", flag);
@@ -137,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
     // オーバーフローメニューの表示
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // 後で消す
-//        flag = true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_options_menu_list, menu);
         MenuItem setLog = menu.findItem(R.id.menuListOptionLogin);
@@ -205,59 +188,31 @@ public class MainActivity extends AppCompatActivity implements RobotLifecycleCal
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-//        Say say = SayBuilder.with(qiContext)
-//                .withText("こんにちは、Pepperです。")
-//                .build();
-//        say.async().run();
-//        Animation animation = AnimationBuilder.with(qiContext)
-//                .withResources(R.raw.raise_right_hand_b001).build();
-//        Animate animate = AnimateBuilder.with(qiContext)
-//                .withAnimation(animation).build();
-//        animate.async().run();
-
-//        // いけそうな案１
-//        final long seconds_1 = System.currentTimeMillis();
-//        int result = 0;
-//        for (int i = 0; i < (100000 * 10000); i++) {
-//            result += 1;
-//        }
-//        final long seconds_2 = System.currentTimeMillis();
-
-
+        Say say = SayBuilder.with(qiContext)
+                .withText("受付は|こちらですよー？")
+                .build();
+        say.async().run();
+        Animation animation = AnimationBuilder.with(qiContext)
+                .withResources(R.raw.hello_a009).build();
+        Animate animate = AnimateBuilder.with(qiContext)
+                .withAnimation(animation).build();
+        animate.async().run();
         while (true) {
             try {
-                Thread.sleep(20000);
+                Thread.sleep(300000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Say say = SayBuilder.with(qiContext)
-                    .withText("こんにちは、ペッパーです！　受付はこちらですヨーッ！")
-                    .build();
             say.async().run();
-
-
+            animate.async().run();
         }
-
-
-
-//
-//        while (true) {
-//            break;
-//        }
     }
 
     @Override
     public void onRobotFocusLost() {
-
     }
 
     @Override
     public void onRobotFocusRefused(String reason) {
-
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 }
