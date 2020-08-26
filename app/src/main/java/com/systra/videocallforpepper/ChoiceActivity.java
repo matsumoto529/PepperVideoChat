@@ -1,4 +1,4 @@
-package com.systra.peppervideochat;
+package com.systra.videocallforpepper;
 
 import android.content.Context;
 import android.content.Intent;

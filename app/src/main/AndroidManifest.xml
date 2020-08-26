@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.systra.peppervideochat">
+    package="com.systra.videocallforpepper">
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -26,11 +26,11 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SettingActivity"></activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".ChoiceActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.systra.videocallforpepper.SettingActivity"></activity>
+        <activity android:name="com.systra.videocallforpepper.LoginActivity" />
+        <activity android:name="com.systra.videocallforpepper.ChatActivity" />
+        <activity android:name="com.systra.videocallforpepper.ChoiceActivity" />
+        <activity android:name="com.systra.videocallforpepper.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

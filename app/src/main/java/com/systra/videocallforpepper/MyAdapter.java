@@ -1,4 +1,4 @@
-package com.systra.peppervideochat;
+package com.systra.videocallforpepper;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private static com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
+    private static com.systra.videocallforpepper.ChoiceActivity ChoiceActivity;
     private String[] displayName;
     private String[] peerId;
     private String email; // メールアドレス保持用

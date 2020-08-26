@@ -1,4 +1,4 @@
-package com.systra.peppervideochat;
+package com.systra.videocallforpepper;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,7 +16,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class PeerIdRegister extends AsyncTask<Uri.Builder, Void, String[]> {
-    private final com.systra.peppervideochat.ChatActivity ChatActivity;
+    private final com.systra.videocallforpepper.ChatActivity ChatActivity;
 
     private String email;
     private String pass;

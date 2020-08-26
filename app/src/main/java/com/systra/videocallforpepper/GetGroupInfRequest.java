@@ -1,4 +1,4 @@
-package com.systra.peppervideochat;
+package com.systra.videocallforpepper;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,7 +21,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class GetGroupInfRequest extends AsyncTask<Uri.Builder, Void, String[][]> {
-    private static com.systra.peppervideochat.ChoiceActivity ChoiceActivity;
+    private static com.systra.videocallforpepper.ChoiceActivity ChoiceActivity;
     // ログインしているユーザーが1人以上いるかどうかの有無
     // true=0人、false=1人以上
     private Boolean flag = false;

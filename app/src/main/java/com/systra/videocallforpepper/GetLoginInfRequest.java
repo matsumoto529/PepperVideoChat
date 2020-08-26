@@ -1,4 +1,4 @@
-package com.systra.peppervideochat;
+package com.systra.videocallforpepper;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class GetLoginInfRequest extends AsyncTask<Uri.Builder, Void, Boolean> {
 
-    private final com.systra.peppervideochat.LoginActivity LoginActivity;
+    private final com.systra.videocallforpepper.LoginActivity LoginActivity;
 
     private String email; // リクエスト用メールアドレス
     private String pass; // リクエスト用パスワード
