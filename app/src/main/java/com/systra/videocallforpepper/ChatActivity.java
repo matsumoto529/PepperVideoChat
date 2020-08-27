@@ -256,6 +256,8 @@ public class ChatActivity extends RobotActivity implements RobotLifecycleCallbac
                             } else {
                                 incomingFlag = false;
                                 incoming(incomingFlag);
+                                String PeerID = peerIdPc;
+                                onPeerSelected(PeerID);
                                 callFlag = false;
                                 flag = true;
                                 new AlertDialog.Builder(ChatActivity.this)
